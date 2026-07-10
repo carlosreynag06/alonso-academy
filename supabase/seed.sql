@@ -1,0 +1,2 @@
+-- Curriculum seed data is versioned in the Phase 2 migration so hosted and
+-- local databases receive the same draft-only curriculum state.

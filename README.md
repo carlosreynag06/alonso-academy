@@ -4,7 +4,7 @@ Alonso Academy is a private, curriculum-controlled American English learning app
 
 ## Current status
 
-Phase 1 establishes only the repository and application foundation. Integrations, authentication, curriculum data, generation, and lesson delivery are intentionally inactive.
+Phase 2 adds the connected Supabase schema, row-level security, parent magic-link foundation, restricted child-session design, and a parent-reviewable Phase A Unit 1 draft. Parent sign-in remains deliberately locked until the single allowlist email is supplied and provisioned.
 
 ## Local setup
 
@@ -25,5 +25,10 @@ The environment template contains names only. Never commit `.env.local` or any p
 - `npm run lint` — run ESLint
 - `npm run typecheck` — check TypeScript
 - `npm test` — run the Vitest suite
+- `npm run supabase -- <command>` — run the pinned Supabase CLI
+- `npm run db:status` — compare local and remote migration history
+- `npm run db:push` — apply pending migrations to the linked project
 
 Tests and screenshots must not be executed without explicit user permission. See [PHASE_PLAN.md](./PHASE_PLAN.md) for the implementation protocol and [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) for foundation boundaries.
+
+Supabase setup and parent provisioning are documented in [docs/PHASE_2_DATA_AND_AUTH.md](./docs/PHASE_2_DATA_AND_AUTH.md).

@@ -8,6 +8,12 @@ Alonso Academy will prove one controlled learning loop for one parent and one ch
 
 The first usable scope is one parent-approved Phase A Unit 1 and a five-lesson week. Phases B-F are represented structurally but contain no invented curriculum.
 
+## Phase status
+
+- Phase 1 completed and pushed on 2026-07-10.
+- Phase 2 implemented and connected on 2026-07-10. Parent authentication activation and curriculum approval remain intentionally pending the parent allowlist email.
+- Phases 3-9 are not authorized.
+
 Before starting any phase, Codex must reopen this file, restate the exact authorized scope, complete only that scope, report the result, and stop. Tests, screenshots, deployment, provider substitutions, plan changes, and work in the next phase require explicit permission where noted.
 
 ## Fixed architecture and public contracts

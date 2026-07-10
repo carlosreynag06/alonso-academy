@@ -9,7 +9,10 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "supabase": "supabase",
+    "db:status": "supabase migration list",
+    "db:push": "supabase db push"
   },
   "packageManager": "npm@11.6.2",
   "engines": {
@@ -19,10 +22,13 @@
     "postcss": "8.5.16"
   },
   "dependencies": {
+    "@supabase/ssr": "^0.12.0",
+    "@supabase/supabase-js": "^2.110.2",
     "next": "16.2.10",
     "react": "19.2.4",
     "react-dom": "19.2.4",
-    "server-only": "^0.0.1"
+    "server-only": "^0.0.1",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.9.1",
@@ -33,6 +39,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.10",
     "jsdom": "^29.1.1",
+    "supabase": "^2.109.1",
     "typescript": "^5",
     "vitest": "^4.1.10"
   }

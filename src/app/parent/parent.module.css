@@ -1,0 +1,51 @@
+.page { min-height: 100svh; display: grid; place-items: center; padding: 24px; }
+.dashboard { width: min(1180px, calc(100% - 40px)); margin: 0 auto; padding: clamp(34px, 6vw, 76px) 0; }
+.setupPanel, .authPanel { width: min(100%, 680px); padding: clamp(28px, 6vw, 56px); border: 1px solid var(--line); border-radius: 24px; background: rgb(255 255 255 / 84%); box-shadow: 0 22px 70px rgb(22 49 62 / 9%); }
+.eyebrow, .cardLabel { color: var(--teal-dark); font-size: .76rem; font-weight: 760; letter-spacing: .12em; text-transform: uppercase; }
+.setupPanel h1, .authPanel h1, .header h1 { margin-top: 10px; color: var(--navy); font-size: clamp(2.25rem, 6vw, 4.4rem); line-height: 1.02; letter-spacing: -.055em; }
+.lede { margin-top: 20px; color: var(--ink-muted); font-size: 1.08rem; line-height: 1.7; }
+.checklist { display: grid; gap: 12px; margin: 30px 0; padding: 22px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface-muted); }
+.checklist p { display: flex; gap: 12px; align-items: center; color: var(--ink); }
+.checklist span { color: var(--teal); font-weight: 800; }
+.checklist .pending, .checklist .pending span { color: var(--ink-muted); }
+.primaryLink, .secondaryButton, .form button { min-height: 46px; display: inline-flex; align-items: center; justify-content: center; padding: 0 18px; border: 0; border-radius: 12px; background: var(--navy); color: white; font: inherit; font-weight: 700; text-decoration: none; cursor: pointer; }
+.primaryLink[aria-disabled="true"] { opacity: .55; pointer-events: none; }
+.secondaryButton { border: 1px solid var(--line-strong); background: white; color: var(--navy); }
+.textLink { display: block; width: fit-content; margin-top: 22px; color: var(--teal-dark); font-weight: 680; text-decoration: underline; text-underline-offset: 4px; }
+.notice, .error { margin-top: 22px; padding: 14px 16px; border-radius: 12px; line-height: 1.5; }
+.notice { background: #e4f3ef; color: #155e57; }
+.error { background: #f8e8e3; color: #8a3d2d; }
+.form { display: grid; gap: 10px; margin-top: 28px; }
+.form label { color: var(--navy); font-weight: 700; }
+.form input, .form textarea { width: 100%; min-height: 48px; padding: 11px 13px; border: 1px solid var(--line-strong); border-radius: 11px; background: white; color: var(--ink); font: inherit; }
+.form textarea { min-height: 100px; resize: vertical; }
+.form button { width: fit-content; margin-top: 6px; }
+.form button:disabled, .form input:disabled { opacity: .55; cursor: not-allowed; }
+.header { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; }
+.header h1 { font-size: clamp(2.2rem, 5vw, 4rem); }
+.heroCard { display: flex; align-items: flex-end; justify-content: space-between; gap: 28px; margin-top: 50px; padding: clamp(26px, 5vw, 44px); border-radius: 24px; background: var(--navy); color: white; box-shadow: 0 22px 70px rgb(22 49 62 / 18%); }
+.heroCard .cardLabel { color: #7ed1c7; }
+.heroCard h2 { margin-top: 10px; font-size: clamp(1.8rem, 4vw, 3rem); letter-spacing: -.04em; }
+.heroCard p:not(.cardLabel) { max-width: 62ch; margin-top: 12px; color: #d8e3e5; line-height: 1.65; }
+.heroCard .primaryLink { flex: 0 0 auto; background: white; color: var(--navy); }
+.grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; margin-top: 20px; }
+.infoCard { min-height: 220px; padding: 28px; border: 1px solid var(--line); border-radius: 20px; background: rgb(255 255 255 / 78%); }
+.infoCard h2 { margin-top: 10px; color: var(--navy); font-size: 1.35rem; }
+.infoCard p:not(.cardLabel) { margin-top: 12px; color: var(--ink-muted); line-height: 1.6; }
+.sectionHeader { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 34px; }
+.sectionHeader h1 { margin-top: 8px; color: var(--navy); font-size: clamp(2.2rem, 6vw, 4rem); letter-spacing: -.055em; }
+.phaseList { display: grid; gap: 14px; }
+.phaseRow { display: grid; grid-template-columns: 70px 1fr; gap: 20px; padding: 22px; border: 1px solid var(--line); border-radius: 16px; background: rgb(255 255 255 / 76%); }
+.phaseCode { width: 50px; height: 50px; display: grid; place-items: center; border-radius: 14px; background: var(--surface-muted); color: var(--navy); font-size: 1.25rem; font-weight: 800; }
+.phaseRow h2 { color: var(--navy); font-size: 1.2rem; }
+.phaseRow p { margin-top: 7px; color: var(--ink-muted); line-height: 1.5; }
+.unitCard { margin-top: 28px; padding: 28px; border: 2px solid var(--teal); border-radius: 20px; background: white; }
+.unitCard h2 { margin-top: 8px; color: var(--navy); font-size: 1.6rem; }
+.unitMeta { display: flex; gap: 10px; margin-top: 14px; }
+.pill { padding: 6px 10px; border-radius: 999px; background: var(--surface-muted); color: var(--ink-muted); font-size: .82rem; font-weight: 700; text-transform: capitalize; }
+.detailGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.detailCard { padding: 24px; border: 1px solid var(--line); border-radius: 18px; background: white; }
+.detailCard h2 { color: var(--navy); font-size: 1.25rem; }
+.detailCard ul { display: grid; gap: 10px; margin: 16px 0 0 20px; color: var(--ink-muted); line-height: 1.5; }
+.approvalPanel { margin-top: 22px; padding: 28px; border: 1px solid var(--line); border-radius: 18px; background: var(--surface-muted); }
+@media (max-width: 760px) { .grid, .detailGrid { grid-template-columns: 1fr; } .header, .heroCard, .sectionHeader { align-items: flex-start; flex-direction: column; } .dashboard { width: min(100% - 28px, 1180px); } }

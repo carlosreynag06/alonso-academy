@@ -15,7 +15,7 @@ export default function Home() {
 
         <div className={styles.status} role="status">
           <span className={styles.statusDot} aria-hidden="true" />
-          Foundation ready - learning areas unlock in approved phases
+          Phase 2 in progress - curriculum and parent access foundation
         </div>
 
         <div className={styles.destinations} aria-label="Academy destinations">
@@ -30,7 +30,7 @@ export default function Home() {
             <p className={styles.cardLabel}>For parent</p>
             <h2 id="parent-title">Command center</h2>
             <p>Curriculum, generation, approvals, and progress will live here.</p>
-            <Link href="/parent">View setup status</Link>
+            <Link href="/parent">Open parent area</Link>
           </section>
         </div>
       </main>

@@ -16,6 +16,16 @@
 - Supabase migrations and generated database types begin only in Phase 2.
 - Generated instructional content is never exposed to a child unless its immutable version is validated and parent-approved.
 
+## Phase 2 data and identity boundaries
+
+- Supabase SSR clients are created per request and use the publishable key plus user cookies.
+- `src/proxy.ts` refreshes authentication cookies but does not replace database authorization.
+- All 19 exposed application tables have RLS enabled; anonymous access has no policies.
+- Parent authorization requires both the configured local email and a matching database allowlist row.
+- Public signup and anonymous sign-in are disabled in hosted and local Supabase Auth configuration.
+- Child sessions store only SHA-256 token hashes and are designed for server-mediated access to one approved lesson.
+- The Phase A pilot and every target begin as `draft`; the approval RPC promotes the unit and targets together and writes approval/audit records.
+
 ## Security baseline
 
 The foundation removes the framework signature header and sets conservative referrer, framing, content-type, camera, and microphone policies. The microphone policy remains disabled until the explicitly authorized voice phase designs the narrow required exception.

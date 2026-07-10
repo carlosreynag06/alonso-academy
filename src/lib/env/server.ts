@@ -9,6 +9,11 @@ const serverVariables = [
 
 export type ServerVariable = (typeof serverVariables)[number];
 
+export function getParentAllowlistEmail(): string | null {
+  const value = process.env.PARENT_ALLOWLIST_EMAIL?.trim().toLowerCase();
+  return value || null;
+}
+
 export function requireServerEnvironment(
   required: readonly ServerVariable[],
 ): Record<ServerVariable, string> {
