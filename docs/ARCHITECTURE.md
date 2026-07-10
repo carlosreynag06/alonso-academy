@@ -31,3 +31,12 @@
 The foundation removes the framework signature header and sets conservative referrer, framing, content-type, camera, and microphone policies. The microphone policy remains disabled until the explicitly authorized voice phase designs the narrow required exception.
 
 Content Security Policy is intentionally deferred until provider transports and asset origins are known; guessing those origins now would either break later integration or create an overly broad policy.
+
+## Phase 3 experience architecture
+
+- Global CSS owns semantic tokens, base accessibility rules, focus treatment, and reduced-motion behavior.
+- CSS Modules own route and component styling; no route imports privileged data into a Client Component.
+- `src/components/ui` provides reusable action, status, feedback, progress, selection, audio, microphone, and story primitives.
+- `src/components/shells` separates the professional parent workspace from Alonso's warmer, simpler learning environment.
+- Parent navigation is presentation only; Supabase RLS and server access checks remain authoritative.
+- Route-level loading, error, and not-found boundaries use plain-language recovery and never expose technical details to Alonso.

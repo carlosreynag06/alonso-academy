@@ -4,7 +4,7 @@ Alonso Academy is a private, curriculum-controlled American English learning app
 
 ## Current status
 
-Phase 2 adds the connected Supabase schema, row-level security, parent magic-link foundation, restricted child-session design, and a parent-reviewable Phase A Unit 1 draft. Parent sign-in remains deliberately locked until the single allowlist email is supplied and provisioned.
+Phase 3 adds the shared visual system, responsive parent and child shells, accessible learning controls, and standard loading, empty, error, audio, and microphone states. Parent sign-in remains deliberately locked until the single allowlist email is supplied and provisioned.
 
 ## Local setup
 
@@ -31,4 +31,4 @@ The environment template contains names only. Never commit `.env.local` or any p
 
 Tests and screenshots must not be executed without explicit user permission. See [PHASE_PLAN.md](./PHASE_PLAN.md) for the implementation protocol and [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) for foundation boundaries.
 
-Supabase setup and parent provisioning are documented in [docs/PHASE_2_DATA_AND_AUTH.md](./docs/PHASE_2_DATA_AND_AUTH.md).
+Supabase setup and parent provisioning are documented in [docs/PHASE_2_DATA_AND_AUTH.md](./docs/PHASE_2_DATA_AND_AUTH.md). Visual-system behavior is documented in [docs/PHASE_3_VISUAL_SYSTEM.md](./docs/PHASE_3_VISUAL_SYSTEM.md).

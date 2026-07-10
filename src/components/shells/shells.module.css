@@ -1,0 +1,14 @@
+.parentShell, .childShell { min-height: 100svh; }
+.parentBar, .childBar { min-height: 72px; display: flex; align-items: center; gap: 28px; padding: 12px max(20px, calc((100vw - 1180px) / 2)); border-bottom: 1px solid var(--line); background: rgb(250 248 242 / 88%); backdrop-filter: blur(18px); }
+.brandLink { display: inline-flex; align-items: center; gap: 12px; color: var(--ink-strong); text-decoration: none; }
+.brandLink strong, .brandLink small { display: block; }
+.brandLink strong { font-size: .92rem; letter-spacing: -.02em; }
+.brandLink small { margin-top: 2px; color: var(--ink-subtle); font-size: .72rem; }
+.parentBar nav { display: flex; align-items: center; gap: 6px; margin-left: auto; }
+.parentBar nav a { min-height: 42px; display: inline-flex; align-items: center; gap: 8px; padding: 0 12px; border-radius: 11px; color: var(--ink-muted); font-size: .86rem; font-weight: 680; text-decoration: none; }
+.parentBar nav a:hover { background: var(--neutral-soft); color: var(--ink-strong); }
+.identity { min-height: 34px; display: inline-flex; align-items: center; gap: 7px; padding: 0 10px; border-left: 1px solid var(--line); color: var(--ink-subtle); font-size: .77rem; }
+.childShell { background: radial-gradient(circle at 75% 20%, rgb(91 168 175 / 10%), transparent 26rem), var(--child-paper); }
+.childBar { background: rgb(253 249 239 / 88%); }
+.childName { margin-left: auto; padding: 7px 12px; border-radius: 999px; background: var(--honey-soft); color: var(--ink-strong); font-size: .82rem; font-weight: 740; }
+@media (max-width: 700px) { .parentBar, .childBar { min-height: 64px; padding-inline: 14px; }.parentBar nav a { width: 42px; padding: 0; justify-content: center; font-size: 0; }.identity { display: none; }.brandLink small { display: none; } }

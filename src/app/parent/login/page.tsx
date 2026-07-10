@@ -1,8 +1,13 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { AcademyMark } from "@/components/ui/academy-mark";
+import { StatusBadge } from "@/components/ui/status-badge";
 import { getParentAccessState } from "@/lib/auth/parent";
 import { requestMagicLink } from "./actions";
 import styles from "../parent.module.css";
+
+export const metadata: Metadata = { title: "Parent Sign In | Alonso Academy" };
 
 export default async function ParentLoginPage({
   searchParams,
@@ -13,8 +18,10 @@ export default async function ParentLoginPage({
   if (state.status === "ready") redirect("/parent");
 
   return (
-    <main className={styles.page}>
+    <main className={styles.page} id="main-content">
       <section className={styles.authPanel} aria-labelledby="login-title">
+        <AcademyMark />
+        <div className={styles.badgeSpace}><StatusBadge status="locked">Private parent access</StatusBadge></div>
         <p className={styles.eyebrow}>Parent access</p>
         <h1 id="login-title">Sign in securely</h1>
         <p className={styles.lede}>Enter the single approved parent email. Supabase will send a one-time sign-in link.</p>
