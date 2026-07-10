@@ -33,7 +33,7 @@ export default function Home() {
             <Link href="/parent">Open parent area</Link>
           </section>
         </div>
-      </main>
+      </section>
     </main>
   );
 }
