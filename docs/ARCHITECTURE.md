@@ -68,3 +68,14 @@ Content Security Policy is intentionally deferred until provider transports and 
 - After verification, the account identity determines `/parent` or `/alonso`. A submitted role value cannot influence authorization.
 - Parent pages require the parent allowlist and profile RPC. Alonso pages require `get_current_child_profile`, which succeeds only when the authenticated Auth user is linked to the singleton child profile.
 - The former magic-link callback now redirects to `/login`, and the legacy `/parent/login` route does the same.
+
+## Phase 6 child lesson boundary
+
+- Alonso Home calls a security-definer RPC that resolves the authenticated singleton child and returns only approved daily/review lessons plus that child's active attempt.
+- The server parses every returned lesson through the strict daily-lesson schema and a registered Phase 6 block allowlist. Unknown or later-phase blocks fail closed and never render.
+- Starting, resuming, saving, recording evidence, and completing are separate child-only RPCs. Each derives the child ID from `auth.uid()` rather than trusting a browser-supplied child ID.
+- Evidence ingestion verifies that the attempt belongs to the child, the artifact remains approved, the block ID exists in that immutable artifact, and the optional target ID belongs to that exact block.
+- A client event UUID makes evidence retries idempotent. A partial unique index preserves one first-attempt record per attempt/block while allowing later supported or scaffolded attempts.
+- Lesson progress stores the current block index, break count, minimal player state, and last activity time. Pause/resume never changes the approved artifact.
+- Completion refuses to proceed while an exit-check block lacks recorded evidence.
+- Phase 6 uses no microphone, raw audio, pronunciation scoring, mastery transitions, or child-facing free chat.

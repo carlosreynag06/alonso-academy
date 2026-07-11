@@ -61,4 +61,4 @@ For future changes:
 - Child audio has no storage column; only derived transcripts and confidence metadata are permitted.
 - Provider metadata is explicitly restricted to safe, non-secret JSON.
 - Audit and approval history is append-only through RLS policies.
-- Later child access must use server-side validation of a hashed, time-limited session token.
+- Child lesson access uses the linked Supabase Auth identity plus server-side attempt/artifact scope validation; browser-supplied child IDs are never accepted.

@@ -28,8 +28,8 @@ export type Database = {
       generation_jobs: TableDef<Timestamped & { id: string; idempotency_key: string; artifact_kind: Database["public"]["Enums"]["artifact_kind"]; curriculum_unit_id: string; curriculum_snapshot_id: string; request_hash: string; status: Database["public"]["Enums"]["generation_job_status"]; attempts: number; artifact_id: string | null; requested_by: string; safe_error_code: string | null; safe_error_message: string | null; started_at: string | null; completed_at: string | null; updated_at: string }>;
       approval_records: TableDef<Timestamped & { id: string; entity_type: string; entity_id: string; action: string; note: string | null; actor_id: string }>;
       curriculum_overrides: TableDef<Timestamped & { id: string; unit_id: string; target_type: string; target_id: string | null; reason: string; actor_id: string }>;
-      lesson_attempts: TableDef<Timestamped & { id: string; child_id: string; lesson_artifact_id: string; status: string; started_at: string; completed_at: string | null }>;
-      activity_evidence: TableDef<Timestamped & { id: string; attempt_id: string; block_id: string; target_type: string; target_id: string | null; evidence_type: string; first_attempt: boolean; support_level: string; correct: boolean | null; response_latency_ms: number | null; retry_count: number; transcript: string | null; provider_confidence: number | null; metadata: Json }>;
+      lesson_attempts: TableDef<Timestamped & { id: string; child_id: string; lesson_artifact_id: string; status: string; started_at: string; completed_at: string | null; current_block_index: number; break_count: number; player_state: Json; last_activity_at: string }>;
+      activity_evidence: TableDef<Timestamped & { id: string; client_event_id: string; attempt_id: string; block_id: string; target_type: string; target_id: string | null; evidence_type: string; first_attempt: boolean; support_level: string; correct: boolean | null; response_latency_ms: number | null; retry_count: number; transcript: string | null; provider_confidence: number | null; metadata: Json }>;
       mastery_records: TableDef<{ id: string; child_id: string; target_type: string; target_id: string; stage: string; evidence_count: number; last_retrieved_at: string | null; updated_at: string }>;
       review_schedules: TableDef<{ id: string; mastery_record_id: string; due_at: string; priority: number; reason: string; updated_at: string }>;
       provider_metadata: TableDef<Timestamped & { id: string; provider: string; operation: string; external_id: string | null; model_id: string | null; status: string; safe_metadata: Json }>;
@@ -58,6 +58,12 @@ export type Database = {
         Args: Record<PropertyKey, never>;
         Returns: Database["public"]["Tables"]["child_profiles"]["Row"];
       };
+      get_child_lesson_home: { Args: Record<PropertyKey, never>; Returns: Json };
+      start_child_lesson: { Args: { p_lesson_id: string }; Returns: Database["public"]["Tables"]["lesson_attempts"]["Row"] };
+      get_child_lesson_attempt: { Args: { p_attempt_id: string }; Returns: Json };
+      save_child_lesson_progress: { Args: { p_attempt_id: string; p_block_index: number; p_status: string; p_break_count: number; p_player_state: Json }; Returns: Database["public"]["Tables"]["lesson_attempts"]["Row"] };
+      record_child_activity_evidence: { Args: { p_client_event_id: string; p_attempt_id: string; p_block_id: string; p_target_id: string | null; p_evidence_type: string; p_first_attempt: boolean; p_support_level: string; p_correct: boolean | null; p_response_latency_ms: number | null; p_retry_count: number; p_metadata: Json }; Returns: Database["public"]["Tables"]["activity_evidence"]["Row"] };
+      complete_child_lesson: { Args: { p_attempt_id: string }; Returns: Database["public"]["Tables"]["lesson_attempts"]["Row"] };
     };
     Enums: {
       curriculum_status: CurriculumStatus;

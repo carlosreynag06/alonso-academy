@@ -16,7 +16,8 @@ The first usable scope is one parent-approved Phase A Unit 1 and a five-lesson w
 - Phase 4 completed on 2026-07-10 with strict generation contracts, server-only OpenAI access, deterministic and semantic validation boundaries, curriculum snapshots, and idempotent jobs. Live requests remain correctly locked until the pilot curriculum is parent-approved.
 - Phase 5 completed on 2026-07-10 with the parent command center, progressive generation studio, immutable artifact reviews, approval/rejection/regeneration actions, integration status, and database-enforced publication prerequisites. The parent identity is allowlisted; the pilot curriculum still awaits the parent's in-app approval.
 - After Phase 5, authentication was revised by explicit parent direction: the two pre-provisioned Supabase users sign in with passwords through one shared `/login` entrance. Identity determines the parent or Alonso destination; public registration and magic-link login are disabled in the application.
-- Phases 6-9 are not authorized.
+- Phase 6 completed on 2026-07-10 with Alonso Home, approved-lesson discovery, a resumable registered-block player, child-scoped progress/evidence RPCs, remediation, breaks, exit checks, and completion. The experience correctly remains in its prepared empty state until the parent approves the first supported lesson.
+- Phases 7-9 are not authorized.
 
 Before starting any phase, Codex must reopen this file, restate the exact authorized scope, complete only that scope, report the result, and stop. Tests, screenshots, deployment, provider substitutions, plan changes, and work in the next phase require explicit permission where noted.
 
