@@ -5,12 +5,18 @@ const serverVariables = [
   "OPENAI_API_KEY",
   "ELEVENLABS_API_KEY",
   "PARENT_ALLOWLIST_EMAIL",
+  "CHILD_LOGIN_EMAIL",
 ] as const;
 
 export type ServerVariable = (typeof serverVariables)[number];
 
 export function getParentAllowlistEmail(): string | null {
   const value = process.env.PARENT_ALLOWLIST_EMAIL?.trim().toLowerCase();
+  return value || null;
+}
+
+export function getChildLoginEmail(): string | null {
+  const value = process.env.CHILD_LOGIN_EMAIL?.trim().toLowerCase();
   return value || null;
 }
 

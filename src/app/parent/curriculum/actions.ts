@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 
 export async function approveCurriculumUnit(formData: FormData) {
   const access = await getParentAccessState();
-  if (access.status !== "ready") redirect("/parent/login");
+  if (access.status !== "ready") redirect("/login");
 
   const unitId = formData.get("unitId")?.toString();
   const reason = formData.get("reason")?.toString().trim();

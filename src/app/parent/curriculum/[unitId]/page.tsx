@@ -11,7 +11,7 @@ export const metadata: Metadata = { title: "Curriculum Unit Review | Alonso Acad
 
 export default async function CurriculumUnitPage({ params, searchParams }: { params: Promise<{ unitId: string }>; searchParams: Promise<{ approved?: string; error?: string }> }) {
   const access = await getParentAccessState();
-  if (access.status !== "ready") redirect("/parent/login");
+  if (access.status !== "ready") redirect("/login");
   const [{ unitId }, query] = await Promise.all([params, searchParams]);
   const data = await getCurriculumUnit(unitId).catch(() => notFound());
 

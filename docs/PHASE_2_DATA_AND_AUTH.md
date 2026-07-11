@@ -6,19 +6,27 @@
 - Project reference: `plodimwenhxkrcwfvhwc`
 - Region: `us-east-2`
 - Local URL: `http://localhost:3000`
-- Auth callback: `http://localhost:3000/auth/confirm`
+- Shared password entrance: `http://localhost:3000/login`
 
 The publishable project URL/key live only in ignored `.env.local`. The personal access token and privileged project keys are never stored in the repository.
 
 ## Authentication policy
 
-Public signup and anonymous authentication are disabled. The application calls magic-link sign-in with `shouldCreateUser: false`, so an unknown address cannot create an account.
+Public signup and anonymous authentication are disabled. The application uses password sign-in for exactly two administratively provisioned and confirmed Supabase users. Unknown identities cannot create an account.
 
 Parent access requires all three conditions:
 
 1. `PARENT_ALLOWLIST_EMAIL` contains the normalized parent email in `.env.local`.
 2. The same email exists in `public.parent_allowlist`.
 3. A corresponding Supabase Auth user has been provisioned administratively.
+
+Alonso access requires:
+
+1. `CHILD_LOGIN_EMAIL` identifies the child account in ignored local configuration.
+2. The corresponding Supabase Auth user has a configured password.
+3. `child_profiles.auth_user_id` links that Auth user to the singleton Alonso profile.
+
+Both `/` and `/login` use the same password form. The verified account determines the destination; the browser does not select or assert a role.
 
 The parent Auth user and allowlist entry were provisioned after the parent supplied the address privately. The normalized address is stored only in ignored local configuration and the private Supabase allowlist; it is not committed. Never infer or add another parent identity from Git or provider ownership.
 

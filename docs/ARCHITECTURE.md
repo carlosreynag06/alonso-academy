@@ -21,9 +21,10 @@
 - Supabase SSR clients are created per request and use the publishable key plus user cookies.
 - `src/proxy.ts` refreshes authentication cookies but does not replace database authorization.
 - All 20 exposed application tables have RLS enabled; anonymous access has no policies.
-- Parent authorization requires both the configured local email and a matching database allowlist row.
+- Parent authorization requires the configured identity, a matching database allowlist row, and a verified Supabase password session.
+- Alonso authorization requires the configured child identity, a verified password session, and a database link from that Auth user to the singleton child profile.
 - Public signup and anonymous sign-in are disabled in hosted and local Supabase Auth configuration.
-- Child sessions store only SHA-256 token hashes and are designed for server-mediated access to one approved lesson.
+- Parent and Alonso sessions use Supabase's server-managed authentication cookies. Role switching requires sign-out and reauthentication.
 - The Phase A pilot and every target begin as `draft`; the approval RPC promotes the unit and targets together and writes approval/audit records.
 
 ## Security baseline
@@ -59,3 +60,11 @@ Content Security Policy is intentionally deferred until provider transports and 
 - Non-week artifacts additionally require their exact parent weekly plan to remain approved.
 - Rejection archives rather than deletes the version and preserves the parent's note in append-only approval and audit history.
 - No child query or lesson renderer is introduced in this phase.
+
+## Two-user password entrance
+
+- `/` and `/login` render the same private entrance. There is no public marketing route or role selector.
+- The server action accepts only the two configured identities and calls Supabase `signInWithPassword`; generic errors do not reveal which account exists.
+- After verification, the account identity determines `/parent` or `/alonso`. A submitted role value cannot influence authorization.
+- Parent pages require the parent allowlist and profile RPC. Alonso pages require `get_current_child_profile`, which succeeds only when the authenticated Auth user is linked to the singleton child profile.
+- The former magic-link callback now redirects to `/login`, and the legacy `/parent/login` route does the same.

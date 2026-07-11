@@ -1,14 +1,19 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { BookIcon, LockIcon, SparkIcon } from "@/components/icons";
 import { ChildShell } from "@/components/shells/child-shell";
 import { ActionLink } from "@/components/ui/action-link";
 import { AudioControl, MicrophoneControl } from "@/components/ui/learning-controls";
 import { StatusBadge } from "@/components/ui/status-badge";
+import { getChildAccessState } from "@/lib/auth/child";
 import styles from "./alonso.module.css";
 
 export const metadata: Metadata = { title: "My Lessons | Alonso Academy" };
 
-export default function AlonsoSetupPage() {
+export default async function AlonsoSetupPage() {
+  const access = await getChildAccessState();
+  if (access.status !== "ready") redirect("/login");
+
   return (
     <ChildShell>
       <main className={styles.page} id="main-content">
@@ -42,7 +47,7 @@ export default function AlonsoSetupPage() {
           <div className={styles.controls}><AudioControl state="unavailable" /><MicrophoneControl state="unavailable" /></div>
         </section>
 
-        <footer className={styles.footer}><ActionLink href="/" tone="quiet">Return to academy entrance</ActionLink></footer>
+        <footer className={styles.footer}><ActionLink href="/login" tone="quiet">Return to sign in</ActionLink></footer>
       </main>
     </ChildShell>
   );

@@ -2,7 +2,7 @@
 
 ## Outcome
 
-Phase 5 turns the generation core into a parent-controlled application workflow. The allowlisted parent can sign in by magic link, approve the Phase A pilot boundary, request a weekly plan, inspect its structured content and validation report, approve or reject the exact version, regenerate a new version, and then request individual daily, review, or listening-story lessons.
+Phase 5 turns the generation core into a parent-controlled application workflow. The allowlisted parent can sign in with the provisioned password account, approve the Phase A pilot boundary, request a weekly plan, inspect its structured content and validation report, approve or reject the exact version, regenerate a new version, and then request individual daily, review, or listening-story lessons.
 
 The workflow is progressive rather than presenting unavailable actions:
 
@@ -38,7 +38,7 @@ The UI is not an authorization mechanism. Parent RLS, authenticated identity che
 
 ## Identity note
 
-The parent identity is now configured and allowlisted. Alonso continues to use the planned restricted child-session token; a second parent-style email login is not required for the child workflow.
+The parent identity is configured and allowlisted. By later explicit parent direction, Alonso also uses his provisioned Supabase password account. That Auth user is linked to the singleton child profile, while parent-only tables remain protected by the parent allowlist and RLS.
 
 ## Deferred
 

@@ -6,6 +6,8 @@ Alonso Academy is a private, curriculum-controlled American English learning app
 
 Phase 5 adds the parent command center and the complete planning approval workflow. The allowlisted parent can review the pilot curriculum, request a five-day plan, inspect validation, approve or reject immutable versions, regenerate with precise direction, and create individual daily, review, or listening-story lessons after approving a week. OpenAI remains server-only and nothing generated is child-readable yet.
 
+The application entrance is available at `/` and `/login`. The two pre-provisioned Supabase accounts sign in directly with their passwords; the verified identity routes to either the parent workspace or Alonso's learning space. There is no public signup or magic-link flow.
+
 ## Local setup
 
 Requirements: Node.js 20.9 or newer and npm 11.

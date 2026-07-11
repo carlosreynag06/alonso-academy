@@ -11,4 +11,5 @@
 .childShell { background: radial-gradient(circle at 75% 20%, rgb(91 168 175 / 10%), transparent 26rem), var(--child-paper); }
 .childBar { background: rgb(253 249 239 / 88%); }
 .childName { margin-left: auto; padding: 7px 12px; border-radius: 999px; background: var(--honey-soft); color: var(--ink-strong); font-size: .82rem; font-weight: 740; }
+.childIdentity { display: flex; align-items: center; gap: 9px; margin-left: auto; }.childIdentity .childName { margin-left: 0; }.childIdentity button { min-height: 34px; padding: 0 10px; border: 1px solid var(--line); border-radius: 10px; background: rgb(255 255 255 / 62%); color: var(--ink-muted); font: inherit; font-size: .73rem; font-weight: 700; cursor: pointer; }
 @media (max-width: 700px) { .parentBar, .childBar { min-height: 64px; padding-inline: 14px; }.parentBar nav a { width: 42px; padding: 0; justify-content: center; font-size: 0; }.identity { display: none; }.brandLink small { display: none; } }

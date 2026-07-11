@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { BookIcon, CheckIcon, ClockIcon, LockIcon, ShieldIcon } from "@/components/icons";
 import { ParentShell } from "@/components/shells/parent-shell";
 import { AcademyMark } from "@/components/ui/academy-mark";
@@ -7,7 +8,7 @@ import { StatusBadge } from "@/components/ui/status-badge";
 import { getParentAccessState } from "@/lib/auth/parent";
 import { getProviderReadiness } from "@/lib/generation/readiness";
 import { getGenerationCommandCenter } from "@/lib/generation/repository";
-import { signOutParent } from "./login/actions";
+import { signOut } from "../login/actions";
 import styles from "./parent.module.css";
 
 export const metadata: Metadata = { title: "Parent Command Center | Alonso Academy" };
@@ -32,7 +33,7 @@ export default async function ParentPage() {
             <p><span className={styles.completeIcon}><CheckIcon size={17} /></span><span><strong>Generation core secured</strong><small>{generation.model} / {generation.reasoningEffort} reasoning / strict output</small></span></p>
             <p className={styles.pendingStep}><span><ClockIcon size={17} /></span><span><strong>Parent identity</strong><small>Waiting for the approved email</small></span></p>
           </div>
-          <div className={styles.gateActions}><ActionLink href="/parent/login">Open sign-in setup</ActionLink><ActionLink href="/" tone="quiet">Return home</ActionLink></div>
+          <div className={styles.gateActions}><ActionLink href="/login">Open sign in</ActionLink></div>
         </section>
         <aside className={styles.gateAside} aria-label="Privacy principles">
           <div className={styles.gateSymbol}><ShieldIcon size={42} /></div>
@@ -44,18 +45,7 @@ export default async function ParentPage() {
   }
 
   if (access.status !== "ready") {
-    return (
-      <main className={styles.page} id="main-content">
-        <section className={styles.authPanel} aria-labelledby="locked-title">
-          <span className={styles.lockIcon}><LockIcon size={26} /></span>
-          <p className={styles.eyebrow}>Parent command center</p>
-          <h1 id="locked-title">Parent access is locked</h1>
-          <p className={styles.lede}>Use the approved parent email to receive a one-time sign-in link.</p>
-          <ActionLink href="/parent/login">Sign in with email</ActionLink>
-          <ActionLink href="/" tone="quiet">Return home</ActionLink>
-        </section>
-      </main>
-    );
+    redirect("/login");
   }
 
   const commandCenter = await getGenerationCommandCenter();
@@ -67,7 +57,7 @@ export default async function ParentPage() {
       <main className={styles.dashboard} id="main-content">
         <header className={styles.header}>
           <div><p className={styles.eyebrow}>Parent command center</p><h1>Good to see you, {access.displayName}.</h1><p className={styles.headerCopy}>Review the learning boundary before creating anything new.</p></div>
-          <form action={signOutParent}><button className={styles.secondaryButton}>Sign out</button></form>
+          <form action={signOut}><button className={styles.secondaryButton}>Sign out</button></form>
         </header>
 
         <section className={styles.heroCard}>

@@ -18,7 +18,7 @@ const labels: Record<string, string> = { weekly_plan: "Weekly plan", daily_lesso
 
 export default async function ArtifactReviewPage({ params, searchParams }: { params: Promise<{ artifactId: string }>; searchParams: Promise<{ generated?: string; reused?: string; approved?: string; rejected?: string; error?: string }> }) {
   const access = await getParentAccessState();
-  if (access.status !== "ready") redirect("/parent/login");
+  if (access.status !== "ready") redirect("/login");
   const [{ artifactId }, query] = await Promise.all([params, searchParams]);
   const data = await getArtifactReview(artifactId).catch(() => notFound());
   const report = validationReportSchema.safeParse(data.artifact.validation_report).success ? validationReportSchema.parse(data.artifact.validation_report) : null;

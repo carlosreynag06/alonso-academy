@@ -10,7 +10,7 @@ export const metadata: Metadata = { title: "Curriculum | Alonso Academy" };
 
 export default async function CurriculumPage() {
   const access = await getParentAccessState();
-  if (access.status !== "ready") redirect("/parent/login");
+  if (access.status !== "ready") redirect("/login");
   const { phases, units } = await getCurriculumOverview();
 
   return (

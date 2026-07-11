@@ -15,6 +15,7 @@ The first usable scope is one parent-approved Phase A Unit 1 and a five-lesson w
 - Phase 3 completed on 2026-07-10 with shared parent/child shells, design tokens, accessible primitives, and standard experience states.
 - Phase 4 completed on 2026-07-10 with strict generation contracts, server-only OpenAI access, deterministic and semantic validation boundaries, curriculum snapshots, and idempotent jobs. Live requests remain correctly locked until the pilot curriculum is parent-approved.
 - Phase 5 completed on 2026-07-10 with the parent command center, progressive generation studio, immutable artifact reviews, approval/rejection/regeneration actions, integration status, and database-enforced publication prerequisites. The parent identity is allowlisted; the pilot curriculum still awaits the parent's in-app approval.
+- After Phase 5, authentication was revised by explicit parent direction: the two pre-provisioned Supabase users sign in with passwords through one shared `/login` entrance. Identity determines the parent or Alonso destination; public registration and magic-link login are disabled in the application.
 - Phases 6-9 are not authorized.
 
 Before starting any phase, Codex must reopen this file, restate the exact authorized scope, complete only that scope, report the result, and stop. Tests, screenshots, deployment, provider substitutions, plan changes, and work in the next phase require explicit permission where noted.
@@ -22,13 +23,13 @@ Before starting any phase, Codex must reopen this file, restate the exact author
 ## Fixed architecture and public contracts
 
 - Next.js 16.2 App Router (latest secure 16.2 patch), React, strict TypeScript, npm, Server Components by default, CSS Modules, and accessible responsive UI.
-- Existing Supabase project for PostgreSQL, migrations, Row Level Security, Storage where needed, and one allowlisted parent authenticated by email magic link.
+- Existing Supabase project for PostgreSQL, migrations, Row Level Security, and Storage where needed. Two pre-provisioned password users are permitted: one allowlisted parent and one Auth user linked to the singleton Alonso profile.
 - OpenAI Responses API model `gpt-5.5` with high reasoning and strict structured output for weekly plans, lessons, stories, and semantic validation. No fallback is permitted without approval.
 - `gpt-5.4-mini` only for evidence-bound summaries and low-risk classifications. Deterministic code remains authoritative for access, curriculum constraints, decodability, mastery, and review scheduling.
 - Server-only provider adapters for OpenAI and ElevenLabs. ElevenLabs MCP handles reusable generation and batch operations; server-authorized streaming handles interactive speech where MCP is not a browser transport.
 - Versioned shared contracts: `CurriculumScope`, `WeeklyPlanDraft`, `DailyLessonDraft`, discriminated `LessonBlock`, `ValidationReport`, `ApprovalRecord`, `ActivityEvidence`, `MasteryRecord`, `ReviewRecommendation`, and `ProviderResult`.
 - Immutable artifact lifecycle: `draft -> validating -> validation_failed | validated -> approved -> active -> completed -> archived`. Regeneration creates a new version and never inherits approval.
-- A restricted child-session token exposes only the active approved lesson and evidence submission. Parent routes require Supabase authentication; leaving child mode requires parent reauthentication.
+- Parent and Alonso routes require Supabase authentication and verify distinct database-backed roles. Future child lesson/evidence operations remain scoped to the authenticated singleton child and active approved lesson. Switching roles requires signing out and authenticating as the other user.
 - Raw microphone recordings are deleted immediately after processing. Only transcripts, provider confidence, timing, scoring evidence, support level, and non-sensitive failure metadata may persist.
 
 ## Phase 1 - Repository and application foundation
@@ -53,11 +54,11 @@ Before starting any phase, Codex must reopen this file, restate the exact author
 
 **Objective:** Make approved curriculum and authorization, rather than AI, the source of truth.
 
-- **Scope:** Add Supabase migrations, RLS, parent magic-link authentication, child-session design, audit records, curriculum inspection, and curriculum import/approval.
+- **Scope:** Add Supabase migrations, RLS, private password authentication for the two pre-provisioned users, child-role design, audit records, curriculum inspection, and curriculum import/approval.
 - **Prerequisites:** Phase 1 complete; Supabase access; parent email provided privately.
 - **Files/systems:** Migrations and typed access for profiles, curriculum, vocabulary, sentence frames, phonics and writing targets, artifacts, approvals, overrides, evidence, mastery, reviews, provider metadata, and audit events.
 - **Integrations:** Supabase Auth and PostgreSQL.
-- **User-visible outcome:** Parent login, protected parent routes, curriculum inspection, honest empty states, and child-mode protection.
+- **User-visible outcome:** Shared login, protected parent and Alonso routes, curriculum inspection, honest empty states, and role-specific routing.
 - **Technical outcome:** Explicit keys and constraints, typed queries, RLS denying anonymous learning-history access, and audited curriculum changes.
 - **Data implications:** Seed six phase definitions only. Draft one Phase A Unit 1 pack and keep it inactive until explicit parent approval.
 - **Security implications:** One allowlisted parent, no public signup, server-only service role, and reasoned/timestamped overrides.
@@ -211,7 +212,7 @@ Test artifacts may be created in their authorized phase, but commands must not r
 ## Defaults
 
 - One parent, one child, one Phase A pilot unit, five lessons.
-- Email magic-link parent authentication with public registration disabled.
+- Direct password authentication for the two pre-provisioned users with public registration disabled.
 - Immediate deletion of raw child audio.
 - Local-first development with no public deployment.
 - npm only; dependency versions are locked in `package-lock.json`.

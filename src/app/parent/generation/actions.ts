@@ -11,7 +11,7 @@ const allowedKinds = new Set<ArtifactKind>(["weekly_plan", "daily_lesson", "revi
 
 export async function requestGeneration(formData: FormData) {
   const access = await getParentAccessState();
-  if (access.status !== "ready") redirect("/parent/login");
+  if (access.status !== "ready") redirect("/login");
 
   const kind = formData.get("kind")?.toString() as ArtifactKind | undefined;
   const unitId = formData.get("unitId")?.toString();
@@ -42,7 +42,7 @@ export async function requestGeneration(formData: FormData) {
 
 export async function approveArtifact(formData: FormData) {
   const access = await getParentAccessState();
-  if (access.status !== "ready") redirect("/parent/login");
+  if (access.status !== "ready") redirect("/login");
   const artifactId = formData.get("artifactId")?.toString();
   const note = formData.get("note")?.toString().trim();
   if (!artifactId || !note || note.length < 5) redirect(`/parent/artifacts/${artifactId ?? ""}?error=note`);
@@ -58,7 +58,7 @@ export async function approveArtifact(formData: FormData) {
 
 export async function rejectArtifact(formData: FormData) {
   const access = await getParentAccessState();
-  if (access.status !== "ready") redirect("/parent/login");
+  if (access.status !== "ready") redirect("/login");
   const artifactId = formData.get("artifactId")?.toString();
   const note = formData.get("note")?.toString().trim();
   if (!artifactId || !note || note.length < 5) redirect(`/parent/artifacts/${artifactId ?? ""}?error=note`);
