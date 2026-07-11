@@ -13,9 +13,11 @@ export async function LoginScreen({ error }: { error?: string }) {
 
   const message = error === "configuration"
     ? "Login is not fully configured. Ask the administrator to check the local account settings."
-    : error
-      ? "That username or password was not accepted. Check both fields and try again."
-      : null;
+    : error === "service"
+      ? "The academy could not reach the secure login service. Please try again."
+      : error
+        ? "That username or password was not accepted. Check both fields and try again."
+        : null;
 
   return <main className={styles.page} id="main-content">
     <section className={styles.brandPanel} aria-label="Alonso Academy introduction">

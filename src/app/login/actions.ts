@@ -24,7 +24,13 @@ export async function signInWithPassword(formData: FormData) {
   }
 
   const supabase = await createClient();
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  let result;
+  try {
+    result = await supabase.auth.signInWithPassword({ email, password });
+  } catch {
+    redirect("/login?error=service");
+  }
+  const { data, error } = result;
   if (error || !data.user?.email) redirect("/login?error=invalid");
 
   const authenticatedEmail = data.user.email.trim().toLowerCase();
