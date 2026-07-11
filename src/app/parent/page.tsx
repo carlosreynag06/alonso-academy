@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { redirect } from "next/navigation";
-import { BookIcon, CheckIcon, ClockIcon, LockIcon, ShieldIcon } from "@/components/icons";
+import { BookIcon, CheckIcon, ClockIcon, LockIcon, ShieldIcon, SparkIcon } from "@/components/icons";
 import { ParentShell } from "@/components/shells/parent-shell";
 import { AcademyMark } from "@/components/ui/academy-mark";
 import { ActionLink } from "@/components/ui/action-link";
@@ -51,26 +52,39 @@ export default async function ParentPage() {
   const commandCenter = await getGenerationCommandCenter();
   const pending = commandCenter.artifacts.filter((artifact) => artifact.status === "validated" || artifact.status === "validation_failed");
   const approvedWeek = commandCenter.artifacts.find((artifact) => artifact.kind === "weekly_plan" && artifact.status === "approved");
+  const approvedLessons = commandCenter.artifacts.filter((artifact) => artifact.kind !== "weekly_plan" && artifact.status === "approved");
+  const currentStep = commandCenter.unit.status !== "approved" ? 1 : !approvedWeek ? 2 : approvedLessons.length < 5 ? 3 : 4;
+  const nextAction = currentStep === 1
+    ? { eyebrow: "Curriculum decision", title: "Review the Unit 1 boundary", copy: "Confirm the vocabulary, sentence frames, sound anchors, and literacy limits before planning begins.", href: `/parent/curriculum/${commandCenter.unit.id}`, label: "Review curriculum" }
+    : currentStep === 2
+      ? { eyebrow: "Weekly planning", title: "Create Alonso’s first five-day plan", copy: "The curriculum is approved. Request a balanced week, inspect the rationale, and decide whether the plan is ready.", href: "/parent/generation", label: "Open planning studio" }
+      : { eyebrow: "Lesson production", title: `${approvedLessons.length} of 5 lessons approved`, copy: "Continue creating and reviewing one lesson at a time. Each version remains private until your decision.", href: "/parent/generation", label: "Continue lesson review" };
+  const kindLabels: Record<string, string> = { weekly_plan: "Weekly plan", daily_lesson: "Daily lesson", review_lesson: "Review lesson", story_lesson: "Listening story" };
 
   return (
     <ParentShell identity={access.email}>
-      <main className={styles.dashboard} id="main-content">
-        <header className={styles.header}>
-          <div><p className={styles.eyebrow}>Parent command center</p><h1>Good to see you, {access.displayName}.</h1><p className={styles.headerCopy}>Review the learning boundary before creating anything new.</p></div>
-          <form action={signOut}><button className={styles.secondaryButton}>Sign out</button></form>
+      <main className={`${styles.dashboard} ${styles.overviewDashboard}`} id="main-content">
+        <header className={styles.overviewHeader}>
+          <div><p className={styles.overline}>Alonso’s learning system</p><h1>Good evening, {access.displayName}.</h1><p>One clear view of what is approved, what needs attention, and what comes next.</p></div>
+          <div className={styles.headerTools}><span><i />All systems private</span><form action={signOut}><button className={styles.secondaryButton}>Sign out</button></form></div>
         </header>
 
-        <section className={styles.heroCard}>
-          <div><StatusBadge status={commandCenter.unit.status === "approved" ? "ready" : "waiting"}>{commandCenter.unit.status === "approved" ? "Curriculum approved" : "Parent review required"}</StatusBadge><p className={styles.cardLabel}>Current curriculum position</p><h2>Phase A / Unit 1</h2><p>{commandCenter.unit.status === "approved" ? "The approved pilot boundary is ready for parent-requested planning. Every generated version remains private until you review it." : "Hello, Listen, and Respond is waiting for your review. Nothing is available to Alonso until you approve it."}</p></div>
-          <ActionLink href={commandCenter.unit.status === "approved" ? "/parent/generation" : `/parent/curriculum/${commandCenter.unit.id}`} tone="light">{commandCenter.unit.status === "approved" ? "Open generation studio" : "Review curriculum"}</ActionLink>
+        <section className={styles.controlHero} aria-labelledby="next-action-title">
+          <div className={styles.controlCopy}><p className={styles.overline}>{nextAction.eyebrow}</p><h2 id="next-action-title">{nextAction.title}</h2><p>{nextAction.copy}</p><ActionLink href={nextAction.href} tone="light">{nextAction.label}</ActionLink></div>
+          <div className={styles.phasePortrait} aria-label="Current curriculum: Phase A, Unit 1"><div className={styles.phaseLetter}>A</div><div><span>Current position</span><strong>Unit 1</strong><small>Hello, Listen, and Respond</small></div><StatusBadge status={commandCenter.unit.status === "approved" ? "ready" : "waiting"}>{commandCenter.unit.status}</StatusBadge></div>
         </section>
 
-        <section className={styles.grid} aria-label="Foundation status">
-          <article className={styles.infoCard}><span className={styles.cardIcon}><ClockIcon size={22} /></span><p className={styles.cardLabel}>Approval queue</p><h2>{pending.length === 0 ? "Nothing waiting" : `${pending.length} version${pending.length === 1 ? "" : "s"} to review`}</h2><p>{pending.length === 0 ? "Generated plans and lessons will appear here after validation." : "Inspect validation details, rationale, and lesson structure before deciding."}</p><ActionLink href="/parent/generation" tone="quiet">Open queue</ActionLink></article>
-          <article className={styles.infoCard}><span className={styles.cardIcon}><ShieldIcon size={22} /></span><p className={styles.cardLabel}>Alonso mode</p><h2>Restricted by design</h2><p>Child sessions use short-lived opaque tokens and cannot query parent data directly.</p></article>
-          <article className={styles.infoCard}><span className={styles.cardIcon}><BookIcon size={22} /></span><p className={styles.cardLabel}>Weekly plan</p><h2>{approvedWeek ? "Approved and ready" : "Not approved yet"}</h2><p>{approvedWeek ? "Individual lessons may now be generated against this exact weekly plan." : "Lesson generation stays locked until a validated five-day plan is approved."}</p></article>
-          <article className={styles.infoCard}><span className={styles.cardIcon}><LockIcon size={22} /></span><p className={styles.cardLabel}>Approval rule</p><h2>Drafts stay private</h2><p>Regeneration creates a new immutable version. Approval never carries forward automatically.</p></article>
-        </section>
+        <section className={styles.learningPath} aria-labelledby="path-title"><div className={styles.pathIntro}><p className={styles.overline}>Pilot workflow</p><h2 id="path-title">From curriculum to lesson</h2></div><ol className={styles.pathSteps}>
+          {[{ n: 1, label: "Curriculum", detail: commandCenter.unit.status === "approved" ? "Approved" : "Needs review" }, { n: 2, label: "Weekly plan", detail: approvedWeek ? "Approved" : "Not started" }, { n: 3, label: "Five lessons", detail: `${approvedLessons.length} approved` }, { n: 4, label: "Alonso", detail: approvedLessons.length >= 5 ? "Ready" : "Locked" }].map((step) => <li className={step.n < currentStep ? styles.pathComplete : step.n === currentStep ? styles.pathCurrent : styles.pathFuture} key={step.n}><span>{step.n < currentStep ? <CheckIcon size={15} /> : step.n}</span><div><strong>{step.label}</strong><small>{step.detail}</small></div></li>)}
+        </ol></section>
+
+        <div className={styles.overviewColumns}>
+          <section className={styles.decisionDesk} aria-labelledby="desk-title"><header><div><p className={styles.overline}>Decision desk</p><h2 id="desk-title">{pending.length ? `${pending.length} item${pending.length === 1 ? "" : "s"} need your judgment` : "Nothing waiting for approval"}</h2></div><Link href="/parent/generation">View all versions →</Link></header>{pending.length ? <div className={styles.decisionList}>{pending.slice(0, 3).map((artifact) => <Link href={`/parent/artifacts/${artifact.id}`} key={artifact.id}><span className={styles.decisionIcon}>{artifact.status === "validated" ? <CheckIcon size={17} /> : <ClockIcon size={17} />}</span><div><strong>{kindLabels[artifact.kind] ?? artifact.kind}</strong><small>Version {artifact.version} · {artifact.status.replaceAll("_", " ")}</small></div><b>Review</b></Link>)}</div> : <div className={styles.deskEmpty}><span><SparkIcon size={22} /></span><div><strong>Your review queue is clear.</strong><p>The next generated plan or lesson will arrive here with its validation report attached.</p></div></div>}</section>
+
+          <aside className={styles.unitBrief} aria-labelledby="unit-brief-title"><div className={styles.briefTop}><span><BookIcon size={20} /></span><p className={styles.overline}>Approved boundary</p><h2 id="unit-brief-title">Unit 1 at a glance</h2></div><dl><div><dt>Oral vocabulary</dt><dd>10 targets</dd></div><div><dt>Sentence frames</dt><dd>4 frames</dd></div><div><dt>Sound anchors</dt><dd>2 sounds</dd></div><div><dt>Lesson rhythm</dt><dd>15 minutes</dd></div></dl><Link href={`/parent/curriculum/${commandCenter.unit.id}`}>Inspect full boundary →</Link></aside>
+        </div>
+
+        <footer className={styles.integrityBar}><div><ShieldIcon size={17} /><span><strong>Parent-controlled publication</strong> · drafts never reach Alonso</span></div><div><LockIcon size={16} /><span>Two verified family accounts</span></div></footer>
       </main>
     </ParentShell>
   );

@@ -1,15 +1,20 @@
 .parentShell, .childShell { min-height: 100svh; }
-.parentBar, .childBar { min-height: 72px; display: flex; align-items: center; gap: 28px; padding: 12px max(20px, calc((100vw - 1180px) / 2)); border-bottom: 1px solid var(--line); background: rgb(250 248 242 / 88%); backdrop-filter: blur(18px); }
-.brandLink { display: inline-flex; align-items: center; gap: 12px; color: var(--ink-strong); text-decoration: none; }
+.parentShell { display: grid; grid-template-columns: 244px minmax(0, 1fr); background: #f3f0e8; }
+.parentBar { position: sticky; top: 0; height: 100svh; display: flex; flex-direction: column; padding: 28px 20px 22px; background: #102f35; color: white; box-shadow: 12px 0 40px rgb(16 47 53 / 8%); }
+.childBar { min-height: 72px; display: flex; align-items: center; gap: 28px; padding: 12px max(20px, calc((100vw - 1180px) / 2)); border-bottom: 1px solid var(--line); background: rgb(253 249 239 / 88%); backdrop-filter: blur(18px); }
+.brandLink { display: inline-flex; align-items: center; gap: 12px; color: white; text-decoration: none; }
 .brandLink strong, .brandLink small { display: block; }
 .brandLink strong { font-size: .92rem; letter-spacing: -.02em; }
-.brandLink small { margin-top: 2px; color: var(--ink-subtle); font-size: .72rem; }
-.parentBar nav { display: flex; align-items: center; gap: 6px; margin-left: auto; }
-.parentBar nav a { min-height: 42px; display: inline-flex; align-items: center; gap: 8px; padding: 0 12px; border-radius: 11px; color: var(--ink-muted); font-size: .86rem; font-weight: 680; text-decoration: none; }
-.parentBar nav a:hover { background: var(--neutral-soft); color: var(--ink-strong); }
-.identity { min-height: 34px; display: inline-flex; align-items: center; gap: 7px; padding: 0 10px; border-left: 1px solid var(--line); color: var(--ink-subtle); font-size: .77rem; }
+.brandLink small { margin-top: 2px; color: #94b1b4; font-size: .72rem; }
+.navLabel { margin: 55px 11px 10px; color: #668b8e; font-size: .65rem; font-weight: 780; letter-spacing: .14em; text-transform: uppercase; }
+.parentBar nav { display: grid; gap: 5px; }
+.parentBar nav a { min-height: 46px; display: flex; align-items: center; gap: 11px; padding: 0 12px; border-radius: 12px; color: #b8cbce; font-size: .84rem; font-weight: 680; text-decoration: none; }
+.parentBar nav a:hover { background: rgb(255 255 255 / 8%); color: white; }
+.railFooter { display: grid; gap: 12px; margin-top: auto; padding-top: 20px; border-top: 1px solid rgb(255 255 255 / 9%); }.railFooter > p { display: flex; align-items: center; gap: 8px; padding: 0 9px; color: #7fa1a4; font-size: .68rem; font-weight: 690; }.railFooter > p i { width: 7px; height: 7px; border-radius: 50%; background: #78d0b5; box-shadow: 0 0 0 4px rgb(120 208 181 / 10%); }
+.identity { min-width: 0; display: flex; align-items: center; gap: 8px; padding: 11px 10px; border-radius: 11px; background: rgb(255 255 255 / 5%); color: #a7bec0; font-size: .68rem; }.identity span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .childShell { background: radial-gradient(circle at 75% 20%, rgb(91 168 175 / 10%), transparent 26rem), var(--child-paper); }
-.childBar { background: rgb(253 249 239 / 88%); }
+.childBar .brandLink { color: var(--ink-strong); }.childBar .brandLink small { color: var(--ink-subtle); }
 .childName { margin-left: auto; padding: 7px 12px; border-radius: 999px; background: var(--honey-soft); color: var(--ink-strong); font-size: .82rem; font-weight: 740; }
 .childIdentity { display: flex; align-items: center; gap: 9px; margin-left: auto; }.childIdentity .childName { margin-left: 0; }.childIdentity button { min-height: 34px; padding: 0 10px; border: 1px solid var(--line); border-radius: 10px; background: rgb(255 255 255 / 62%); color: var(--ink-muted); font: inherit; font-size: .73rem; font-weight: 700; cursor: pointer; }
-@media (max-width: 700px) { .parentBar, .childBar { min-height: 64px; padding-inline: 14px; }.parentBar nav a { width: 42px; padding: 0; justify-content: center; font-size: 0; }.identity { display: none; }.brandLink small { display: none; } }
+@media (max-width: 820px) { .parentShell { display: block; }.parentBar { position: sticky; z-index: 10; height: 68px; min-height: 68px; flex-direction: row; align-items: center; gap: 14px; padding: 10px 14px; }.parentBar .brandLink span, .navLabel, .railFooter { display: none; }.parentBar nav { display: flex; gap: 3px; margin-left: auto; }.parentBar nav a { width: 42px; min-height: 42px; justify-content: center; padding: 0; }.parentBar nav a span { display: none; } }
+@media (max-width: 700px) { .childBar { min-height: 64px; padding-inline: 14px; }.childBar .brandLink small { display: none; } }
