@@ -2,8 +2,10 @@
 
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { BookIcon, CheckIcon, ClockIcon, MicIcon, SoundIcon, SparkIcon } from "@/components/icons";
+import { BookIcon, CheckIcon, SparkIcon } from "@/components/icons";
 import type { DailyLessonDraft, LessonBlock } from "@/lib/generation/contracts";
+import { AudioLessonButton } from "./audio-lesson-button";
+import { SpeechControl } from "./speech-control";
 import styles from "./lesson-player.module.css";
 
 type Mode = "activity" | "feedback" | "break" | "complete" | "error";
@@ -38,6 +40,7 @@ export function LessonPlayer({ attemptId, lesson, initialIndex, initialBreakCoun
   const block = lesson.blocks[index];
   const progress = Math.round(((index + (mode === "feedback" ? 1 : 0)) / lesson.blocks.length) * 100);
   const options = blockOptions(block);
+  const speechEnabled = (block.type === "phonemic_awareness" && block.responseMode === "say") || block.type === "exit_check";
   const reducedOptions = support === "reduced_choices" && options.length > 2
     ? [options.find((option) => option.correct)!, options.find((option) => !option.correct)!]
     : options;
@@ -84,6 +87,8 @@ export function LessonPlayer({ attemptId, lesson, initialIndex, initialBreakCoun
   }
 
   async function tryAgain() { setMode("activity"); setSelected(null); startedAt.current = Date.now(); }
+  function speechMatched() { setWasCorrect(true); setSelected("spoken"); setMode("feedback"); }
+  function speechRetry() { setRetries((value) => value + 1); }
   async function pauseLesson() { try { await saveProgress(index, "paused"); router.push("/alonso"); router.refresh(); } catch { setMode("error"); } }
   async function takeBreak() { const next = breakCount + 1; try { await saveProgress(index, "paused", next); setBreakCount(next); setMode("break"); } catch { setMode("error"); } }
   async function endBreak() { try { await saveProgress(index, "in_progress"); setMode("activity"); startedAt.current = Date.now(); } catch { setMode("error"); } }
@@ -99,18 +104,20 @@ export function LessonPlayer({ attemptId, lesson, initialIndex, initialBreakCoun
       <p className={styles.activityType}>{block.type.replaceAll("_", " ")}</p>
       <h1 id="activity-title">{block.instruction}</h1>
 
-      {block.type === "model_audio" && <div className={styles.modelActivity}><button className={styles.soundButton} onClick={() => setSupport("modeled")} aria-label="Listen to the model"><SoundIcon size={35} /><span>Listen</span></button><strong>{block.modelText}</strong><p>Listen once. Replay if you want.</p></div>}
-      {(block.type === "listen_select" || block.type === "picture_action_select") && <div className={styles.prompt}><span><SoundIcon size={23} /></span><p>{block.promptText}</p></div>}
-      {block.type === "phonemic_awareness" && <div className={styles.prompt}><span><MicIcon size={23} /></span><p>{block.promptText}</p></div>}
+      {block.type === "model_audio" && <div className={styles.modelActivity}><AudioLessonButton attemptId={attemptId} blockId={block.id} large onReplay={() => setSupport(support === "independent" ? "modeled" : "replay")} /><strong>{block.modelText}</strong><p>Listen once. Replay if you want.</p></div>}
+      {(block.type === "listen_select" || block.type === "picture_action_select") && <div className={styles.prompt}><AudioLessonButton attemptId={attemptId} blockId={block.id} onReplay={() => setSupport("replay")} /><p>{block.promptText}</p></div>}
+      {block.type === "phonemic_awareness" && <div className={styles.prompt}><AudioLessonButton attemptId={attemptId} blockId={block.id} onReplay={() => setSupport("replay")} /><p>{block.promptText}</p></div>}
       {block.type === "letter_work" && <div className={styles.letterModel}><span>{block.grapheme}</span><p>{block.modelText}</p></div>}
       {block.type === "movement_break" && <div className={styles.movement}><span aria-hidden="true">↟</span><p>{block.movement}</p></div>}
-      {block.type === "exit_check" && <div className={styles.prompt}><span><CheckIcon size={23} /></span><p>{block.promptText}</p></div>}
+      {block.type === "exit_check" && <div className={styles.prompt}><AudioLessonButton attemptId={attemptId} blockId={block.id} onReplay={() => setSupport("replay")} /><p>{block.promptText}</p></div>}
 
-      {reducedOptions.length > 0 && <div className={styles.choices}>{reducedOptions.map((option, choiceIndex) => <button className={selected === option.label ? option.correct ? styles.choiceCorrect : styles.choiceWrong : ""} disabled={mode === "feedback"} key={`${option.label}-${choiceIndex}`} onClick={() => choose(option.label, option.correct)}><span>{block.type === "letter_work" ? option.label : String.fromCharCode(65 + choiceIndex)}</span><strong>{block.type === "letter_work" ? "" : option.label}</strong></button>)}</div>}
+      {speechEnabled && mode === "activity" && <SpeechControl attemptId={attemptId} blockId={block.id} firstAttempt={retries === 0} supportLevel={support} retryCount={retries} startedAt={startedAt.current} onMatched={speechMatched} onRetry={speechRetry} />}
+
+      {reducedOptions.length > 0 && (!speechEnabled || retries > 0) && <><p className={styles.choiceAlternative}>{speechEnabled ? "Or choose what you wanted to say" : "Choose your answer"}</p><div className={styles.choices}>{reducedOptions.map((option, choiceIndex) => <button className={selected === option.label ? option.correct ? styles.choiceCorrect : styles.choiceWrong : ""} disabled={mode === "feedback"} key={`${option.label}-${choiceIndex}`} onClick={() => choose(option.label, option.correct)}><span>{block.type === "letter_work" ? option.label : String.fromCharCode(65 + choiceIndex)}</span><strong>{block.type === "letter_work" ? "" : option.label}</strong></button>)}</div></>}
       {support === "reduced_choices" && mode === "activity" && <p className={styles.hint}>{lesson.remediation.scaffoldInstruction}</p>}
 
       {mode === "feedback" && <div className={wasCorrect ? styles.goodFeedback : styles.tryFeedback} role="status"><span>{wasCorrect ? <CheckIcon size={24} /> : <SparkIcon size={24} />}</span><div><strong>{wasCorrect ? "Yes—that’s it." : "Almost. Let’s make it simpler."}</strong><p>{wasCorrect ? "You can move to the next step." : lesson.remediation.scaffoldInstruction}</p></div><button onClick={wasCorrect ? advance : tryAgain}>{wasCorrect ? "Next" : "Try again"}<span>→</span></button></div>}
-      {mode === "activity" && block.type === "model_audio" && <div className={styles.bottomActions}><button onClick={() => setSupport("replay")}>Replay</button><button onClick={advance}>Next <span>→</span></button></div>}
+      {mode === "activity" && block.type === "model_audio" && <div className={styles.bottomActions}><button onClick={advance}>Next <span>→</span></button></div>}
       {mode === "activity" && block.type === "movement_break" && <div className={styles.bottomActions}><button onClick={advance}>I did it <span>→</span></button></div>}
     </section>
   </main>;

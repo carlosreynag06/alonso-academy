@@ -10,6 +10,8 @@ The application entrance is available at `/` and `/login`. The two pre-provision
 
 Phase 6 adds Alonso Home and the child lesson player. Only approved daily/review lesson versions with registered activity blocks can appear. Attempts resume from the saved block, preserve first-attempt and scaffolded evidence separately, support breaks and reduced-choice remediation, and require exit evidence before completion. Until the parent approves the first lesson, Alonso sees a designed preparation state rather than invented content.
 
+Phase 7 adds server-only ElevenLabs audio and speech infrastructure, reusable local TTS caching, ephemeral microphone processing, silence-aware feedback, and derived evidence. Live audio stays gated until a parent-approved voice and provider key are configured.
+
 ## Local setup
 
 Requirements: Node.js 20.9 or newer and npm 11.
@@ -37,3 +39,4 @@ Tests and screenshots must not be executed without explicit user permission. See
 
 Supabase setup and parent provisioning are documented in [docs/PHASE_2_DATA_AND_AUTH.md](./docs/PHASE_2_DATA_AND_AUTH.md). Visual-system behavior is documented in [docs/PHASE_3_VISUAL_SYSTEM.md](./docs/PHASE_3_VISUAL_SYSTEM.md). The generation boundary is documented in [docs/PHASE_4_GENERATION_CORE.md](./docs/PHASE_4_GENERATION_CORE.md), and the parent workflow in [docs/PHASE_5_PARENT_COMMAND_CENTER.md](./docs/PHASE_5_PARENT_COMMAND_CENTER.md).
 The child player and evidence boundary are documented in [docs/PHASE_6_CHILD_LESSON_PLAYER.md](./docs/PHASE_6_CHILD_LESSON_PLAYER.md).
+Audio, speech, privacy, and provider activation are documented in [docs/PHASE_7_AUDIO_AND_SPEECH.md](./docs/PHASE_7_AUDIO_AND_SPEECH.md).

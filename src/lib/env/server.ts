@@ -20,6 +20,19 @@ export function getChildLoginEmail(): string | null {
   return value || null;
 }
 
+export function getElevenLabsConfiguration() {
+  const apiKey = process.env.ELEVENLABS_API_KEY?.trim() || null;
+  const voiceId = process.env.ELEVENLABS_VOICE_ID?.trim() || null;
+
+  return {
+    apiKey,
+    voiceId,
+    ttsModel: process.env.ELEVENLABS_TTS_MODEL?.trim() || "eleven_multilingual_v2",
+    sttModel: process.env.ELEVENLABS_STT_MODEL?.trim() || "scribe_v2",
+    ready: Boolean(apiKey && voiceId),
+  };
+}
+
 export function requireServerEnvironment(
   required: readonly ServerVariable[],
 ): Record<ServerVariable, string> {

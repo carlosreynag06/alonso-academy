@@ -79,3 +79,13 @@ Content Security Policy is intentionally deferred until provider transports and 
 - Lesson progress stores the current block index, break count, minimal player state, and last activity time. Pause/resume never changes the approved artifact.
 - Completion refuses to proceed while an exit-check block lacks recorded evidence.
 - Phase 6 uses no microphone, raw audio, pronunciation scoring, mastery transitions, or child-facing free chat.
+
+## Phase 7 audio and speech boundary
+
+- Audio routes resolve text from the authenticated child's active approved artifact and block ID. The browser cannot submit arbitrary text for synthesis.
+- ElevenLabs credentials and the approved voice ID are read only in server-only provider modules. Missing provider configuration produces a safe text/choice fallback and never interrupts lesson state.
+- Quality-first MP3 models are cached under ignored local application data using a SHA-256 key derived from voice, model, and approved text.
+- Microphone recording begins only after Alonso taps the control. A short recording remains in browser/request memory, is sent directly for transcription, and is released without filesystem, object-storage, or database persistence.
+- The speech RPC stores only transcript, provider confidence, latency, retry/support state, deterministic outcome, and safe model metadata. Its metadata explicitly records that raw audio was not stored.
+- Deterministic normalization treats silence separately from a mismatch and accepts close transcriptions. Minor accent variation cannot block the lesson; a choice fallback remains available after a retry or provider failure.
+- Phase 7 does not add open voice conversation, emotional inference, audio archives, automatic mastery, or phase advancement.

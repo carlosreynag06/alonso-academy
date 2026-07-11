@@ -63,6 +63,7 @@ export type Database = {
       get_child_lesson_attempt: { Args: { p_attempt_id: string }; Returns: Json };
       save_child_lesson_progress: { Args: { p_attempt_id: string; p_block_index: number; p_status: string; p_break_count: number; p_player_state: Json }; Returns: Database["public"]["Tables"]["lesson_attempts"]["Row"] };
       record_child_activity_evidence: { Args: { p_client_event_id: string; p_attempt_id: string; p_block_id: string; p_target_id: string | null; p_evidence_type: string; p_first_attempt: boolean; p_support_level: string; p_correct: boolean | null; p_response_latency_ms: number | null; p_retry_count: number; p_metadata: Json }; Returns: Database["public"]["Tables"]["activity_evidence"]["Row"] };
+      record_child_speech_evidence: { Args: { p_client_event_id: string; p_attempt_id: string; p_block_id: string; p_target_id: string | null; p_evidence_type: string; p_first_attempt: boolean; p_support_level: string; p_correct: boolean | null; p_response_latency_ms: number | null; p_retry_count: number; p_transcript: string | null; p_provider_confidence: number | null; p_provider_model: string; p_outcome: string }; Returns: Database["public"]["Tables"]["activity_evidence"]["Row"] };
       complete_child_lesson: { Args: { p_attempt_id: string }; Returns: Database["public"]["Tables"]["lesson_attempts"]["Row"] };
     };
     Enums: {
