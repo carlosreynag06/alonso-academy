@@ -13,7 +13,7 @@
 - `src/lib` owns domain, data, validation, and provider boundaries.
 - Secrets are read only by modules that import `server-only`.
 - Browser code never receives OpenAI, ElevenLabs, or Supabase service-role credentials.
-- Supabase migrations and generated database types begin only in Phase 2.
+- Supabase migrations and typed database contracts live under `supabase/migrations` and `src/types`.
 - Generated instructional content is never exposed to a child unless its immutable version is validated and parent-approved.
 
 ## Phase 2 data and identity boundaries
@@ -40,3 +40,12 @@ Content Security Policy is intentionally deferred until provider transports and 
 - `src/components/shells` separates the professional parent workspace from Alonso's warmer, simpler learning environment.
 - Parent navigation is presentation only; Supabase RLS and server access checks remain authoritative.
 - Route-level loading, error, and not-found boundaries use plain-language recovery and never expose technical details to Alonso.
+
+## Phase 4 generation boundary
+
+- `src/lib/generation/contracts.ts` is the versioned registry for plans, lessons, blocks, stories, summaries, validation reports, evidence, mastery, review, approvals, and provider results.
+- `src/lib/generation/snapshot.ts` reads only approved curriculum targets and hashes the immutable boundary supplied to a request.
+- `src/lib/generation/provider.ts` is server-only, fixes instructional work to `gpt-5.5` with high reasoning, disables API-side response storage, and has no fallback path.
+- Deterministic schema and curriculum checks run before semantic validation. Model judgment cannot override a code-level failure.
+- `generation_jobs` provides one request hash per idempotency key, bounded attempts, safe failure fields, and parent-only RLS.
+- `validated` is still private. Phase 5 must add explicit parent approval and immutable publication transitions before anything is child-readable.

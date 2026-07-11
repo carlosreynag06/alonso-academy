@@ -5,6 +5,7 @@ import { AcademyMark } from "@/components/ui/academy-mark";
 import { ActionLink } from "@/components/ui/action-link";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { getParentAccessState } from "@/lib/auth/parent";
+import { getProviderReadiness } from "@/lib/generation/readiness";
 import { signOutParent } from "./login/actions";
 import styles from "./parent.module.css";
 
@@ -12,6 +13,7 @@ export const metadata: Metadata = { title: "Parent Command Center | Alonso Acade
 
 export default async function ParentPage() {
   const access = await getParentAccessState();
+  const generation = getProviderReadiness(false);
 
   if (access.status === "configuration_required") {
     return (
@@ -26,6 +28,7 @@ export default async function ParentPage() {
             <p><span className={styles.completeIcon}><CheckIcon size={17} /></span><span><strong>Supabase connected</strong><small>Private project and publishable client configured</small></span></p>
             <p><span className={styles.completeIcon}><CheckIcon size={17} /></span><span><strong>Database protected</strong><small>19 tables secured with row-level policies</small></span></p>
             <p><span className={styles.completeIcon}><CheckIcon size={17} /></span><span><strong>Curriculum drafted</strong><small>Six phases and one inactive pilot unit</small></span></p>
+            <p><span className={styles.completeIcon}><CheckIcon size={17} /></span><span><strong>Generation core secured</strong><small>{generation.model} / {generation.reasoningEffort} reasoning / strict output</small></span></p>
             <p className={styles.pendingStep}><span><ClockIcon size={17} /></span><span><strong>Parent identity</strong><small>Waiting for the approved email</small></span></p>
           </div>
           <div className={styles.gateActions}><ActionLink href="/parent/login">Open sign-in setup</ActionLink><ActionLink href="/" tone="quiet">Return home</ActionLink></div>
@@ -71,6 +74,7 @@ export default async function ParentPage() {
           <article className={styles.infoCard}><span className={styles.cardIcon}><LockIcon size={22} /></span><p className={styles.cardLabel}>Approval rule</p><h2>Drafts stay private</h2><p>Curriculum targets require an explicit reasoned approval before later generation can use them.</p></article>
           <article className={styles.infoCard}><span className={styles.cardIcon}><ShieldIcon size={22} /></span><p className={styles.cardLabel}>Alonso mode</p><h2>Restricted by design</h2><p>Child sessions use short-lived opaque tokens and cannot query parent data directly.</p></article>
           <article className={styles.infoCard}><span className={styles.cardIcon}><BookIcon size={22} /></span><p className={styles.cardLabel}>Learning data</p><h2>No activity yet</h2><p>Evidence, mastery, and review remain empty until approved lessons exist.</p></article>
+          <article className={styles.infoCard}><span className={styles.cardIcon}><ClockIcon size={22} /></span><p className={styles.cardLabel}>Generation pipeline</p><h2>Ready, then locked</h2><p>The provider and validators are configured. Requests remain blocked until this curriculum is approved.</p><ActionLink href="/parent/generation" tone="quiet">Inspect readiness</ActionLink></article>
         </section>
       </main>
     </ParentShell>

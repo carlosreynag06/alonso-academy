@@ -24,7 +24,8 @@ export type Database = {
       phonics_targets: TableDef<Timestamped & { id: string; unit_id: string; phoneme: string; grapheme: string | null; target_type: string; reading_allowed: boolean; status: CurriculumStatus; metadata: Json }>;
       writing_targets: TableDef<Timestamped & { id: string; unit_id: string; title: string; demand: string; activity_type: string; status: CurriculumStatus; metadata: Json }>;
       child_profiles: TableDef<Timestamped & { id: string; singleton: boolean; preferred_name: string; home_language: string; target_language: string; current_phase_code: string | null; current_unit_id: string | null; updated_at: string }>;
-      generated_artifacts: TableDef<Timestamped & { id: string; kind: string; status: ArtifactStatus; version: number; previous_version_id: string | null; curriculum_unit_id: string; curriculum_snapshot: Json; content: Json; validation_report: Json | null; model_id: string | null; prompt_version: string | null; created_by: string; updated_at: string }>;
+      generated_artifacts: TableDef<Timestamped & { id: string; kind: string; status: ArtifactStatus; version: number; previous_version_id: string | null; curriculum_unit_id: string; curriculum_snapshot: Json; content: Json; validation_report: Json | null; model_id: string | null; prompt_version: string | null; request_hash: string | null; reasoning_effort: string | null; semantic_validator_model_id: string | null; created_by: string; updated_at: string }>;
+      generation_jobs: TableDef<Timestamped & { id: string; idempotency_key: string; artifact_kind: Database["public"]["Enums"]["artifact_kind"]; curriculum_unit_id: string; curriculum_snapshot_id: string; request_hash: string; status: Database["public"]["Enums"]["generation_job_status"]; attempts: number; artifact_id: string | null; requested_by: string; safe_error_code: string | null; safe_error_message: string | null; started_at: string | null; completed_at: string | null; updated_at: string }>;
       approval_records: TableDef<Timestamped & { id: string; entity_type: string; entity_id: string; action: string; note: string | null; actor_id: string }>;
       curriculum_overrides: TableDef<Timestamped & { id: string; unit_id: string; target_type: string; target_id: string | null; reason: string; actor_id: string }>;
       lesson_attempts: TableDef<Timestamped & { id: string; child_id: string; lesson_artifact_id: string; status: string; started_at: string; completed_at: string | null }>;
@@ -52,6 +53,7 @@ export type Database = {
       artifact_kind: "weekly_plan" | "daily_lesson" | "review_lesson" | "story_lesson" | "parent_summary";
       approval_action: "approved" | "rejected" | "revoked";
       mastery_stage: "introduced" | "assisted_success" | "recognized" | "understood_in_context" | "used_with_prompt" | "used_independently" | "used_across_contexts" | "stable_mastery";
+      generation_job_status: "queued" | "running" | "succeeded" | "failed";
     };
     CompositeTypes: Record<string, never>;
   };

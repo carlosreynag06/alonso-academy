@@ -2,9 +2,9 @@
 
 ## Direction
 
-The shared experience is warm, calm, and deliberate. It uses deep ink, restrained teal, warm paper, and small honey/coral accents. The interface avoids game economies, bright reward loops, excessive gradients, glow effects, and cartoon overload.
+Alonso Academy is a product application, not a marketing website. The shared experience is warm, calm, premium, and deliberate. “Calm” means emotionally safe and focused; it does not mean plain, basic, muted, or unfinished. It uses deep ink, restrained teal, warm paper, and intentional honey/coral accents while avoiding game economies and manipulative reward loops.
 
-Parent pages prioritize scanning, trust, and clear approval boundaries. Alonso's pages use larger type, simpler language, generous spacing, and stable controls without looking unfinished or babyish.
+Parent pages should feel as polished and considered as a best-in-class adult product while prioritizing scanning, trust, and clear approval boundaries. Alonso's interface is for a six-year-old boy: it should be beautiful, imaginative, tactile, and engaging, with larger type, simpler language, generous spacing, and stable controls without becoming babyish or overstimulating. The shell is a foundation, not the final experience.
 
 ## Design tokens
 
