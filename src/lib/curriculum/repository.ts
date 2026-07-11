@@ -25,15 +25,16 @@ export async function getCurriculumUnit(unitId: string) {
   ]);
 
   if (unit.error) throw unit.error;
+  if (!unit.data) throw new Error("Curriculum unit not found.");
   for (const result of [vocabulary, frames, phonics, writing]) {
     if (result.error) throw result.error;
   }
 
   return {
     unit: unit.data,
-    vocabulary: vocabulary.data,
-    frames: frames.data,
-    phonics: phonics.data,
-    writing: writing.data,
+    vocabulary: vocabulary.data ?? [],
+    frames: frames.data ?? [],
+    phonics: phonics.data ?? [],
+    writing: writing.data ?? [],
   };
 }

@@ -1,52 +1,48 @@
+import { randomUUID } from "node:crypto";
 import type { Metadata } from "next";
+import Link from "next/link";
 import { redirect } from "next/navigation";
-import { CheckIcon, LockIcon, ShieldIcon, SparkIcon } from "@/components/icons";
+import { CheckIcon, ClockIcon, LockIcon, ShieldIcon, SparkIcon } from "@/components/icons";
 import { ParentShell } from "@/components/shells/parent-shell";
+import { ActionLink } from "@/components/ui/action-link";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { getParentAccessState } from "@/lib/auth/parent";
+import { getGenerationCommandCenter } from "@/lib/generation/repository";
 import { getProviderReadiness } from "@/lib/generation/readiness";
-import { createClient } from "@/lib/supabase/server";
+import { requestGeneration } from "./actions";
 import styles from "../parent.module.css";
 
-export const metadata: Metadata = { title: "Generation Readiness | Alonso Academy" };
+export const metadata: Metadata = { title: "Generation Studio | Alonso Academy" };
 
-export default async function GenerationReadinessPage() {
+const kindLabel: Record<string, string> = { weekly_plan: "Weekly plan", daily_lesson: "Daily lesson", review_lesson: "Review lesson", story_lesson: "Listening story", parent_summary: "Parent summary" };
+
+export default async function GenerationPage({ searchParams }: { searchParams: Promise<{ error?: string; message?: string }> }) {
   const access = await getParentAccessState();
   if (access.status !== "ready") redirect("/parent");
-
-  const supabase = await createClient();
-  const { data: pilot } = await supabase.from("curriculum_units").select("status").eq("code", "A-U1").maybeSingle();
-  const readiness = getProviderReadiness(pilot?.status === "approved");
+  const [data, query] = await Promise.all([getGenerationCommandCenter(), searchParams]);
+  const readiness = getProviderReadiness(data.unit.status === "approved");
+  const approvedWeek = data.artifacts.find((artifact) => artifact.kind === "weekly_plan" && artifact.status === "approved");
+  const reviewQueue = data.artifacts.filter((artifact) => artifact.status === "validated" || artifact.status === "validation_failed");
+  const latestFailure = data.jobs.find((job) => job.status === "failed");
 
   return (
     <ParentShell identity={access.email}>
       <main className={styles.dashboard} id="main-content">
-        <header className={styles.header}>
-          <div><p className={styles.eyebrow}>Structured generation core</p><h1>Creative by request.<br />Bounded by design.</h1><p className={styles.headerCopy}>The model can draft; curriculum and parent judgment remain in control.</p></div>
-        </header>
+        <header className={styles.header}><div><p className={styles.eyebrow}>Parent generation studio</p><h1>Plan with clarity.<br />Publish with intention.</h1><p className={styles.headerCopy}>Request one bounded draft at a time, inspect every choice, then decide what Alonso may use.</p></div><StatusBadge status={readiness.ready ? "ready" : "waiting"}>{readiness.ready ? "Generation ready" : "Curriculum gate"}</StatusBadge></header>
 
-        <section className={styles.readinessHero} aria-labelledby="readiness-title">
-          <div>
-            <StatusBadge status={readiness.ready ? "ready" : "waiting"}>{readiness.ready ? "Ready for parent requests" : "Safely locked"}</StatusBadge>
-            <h2 id="readiness-title">No AI draft can publish itself.</h2>
-            <p>Every request receives an immutable curriculum snapshot, a strict output contract, deterministic checks, semantic review, and a fresh parent approval requirement.</p>
-          </div>
-          <div className={styles.modelPlate}><small>Instructional model</small><strong>{readiness.model}</strong><span>{readiness.reasoningEffort} reasoning · strict structured output · no fallback</span></div>
+        {query.error && <section className={styles.error} role="alert"><strong>Generation did not continue.</strong> {query.message ?? "Review the request and current prerequisites, then try again."}</section>}
+
+        <section className={styles.commandMetrics} aria-label="Command center status">
+          <article><span><ShieldIcon size={19} /></span><div><small>Curriculum</small><strong>{data.unit.status === "approved" ? "Approved" : "Review required"}</strong></div></article>
+          <article><span><SparkIcon size={19} /></span><div><small>Instructional model</small><strong>{readiness.model}</strong></div></article>
+          <article><span><ClockIcon size={19} /></span><div><small>Review queue</small><strong>{reviewQueue.length} version{reviewQueue.length === 1 ? "" : "s"}</strong></div></article>
         </section>
 
-        <section className={styles.pipelineGrid} aria-label="Validation pipeline">
-          <article className={styles.pipelineCard}><span className={styles.pipelineNumber}>1</span><h3>Curriculum snapshot</h3><p>Only approved vocabulary, frames, sound anchors, literacy demands, and review context enter the request.</p></article>
-          <article className={styles.pipelineCard}><span className={styles.pipelineNumber}>2</span><h3>Two validation layers</h3><p>Code checks schemas and targets first. Semantic review runs only after deterministic validation passes.</p></article>
-          <article className={styles.pipelineCard}><span className={styles.pipelineNumber}>3</span><h3>Parent publication</h3><p>Validated still means private. Approval never carries to a regenerated version.</p></article>
-        </section>
+        {data.unit.status !== "approved" ? <section className={styles.commandGate}><div className={styles.gateGlow}><LockIcon size={28} /></div><p className={styles.cardLabel}>Required before generation</p><h2>Approve the learning boundary first.</h2><p>Unit 1 is still a parent-review draft. Inspect its vocabulary, sentence frames, sound anchors, novelty limits, and literacy demands before allowing any AI request.</p><ActionLink href={`/parent/curriculum/${data.unit.id}`}>Review Unit 1</ActionLink></section> : !approvedWeek ? <section className={styles.generatorPanel}><div className={styles.generatorIntro}><StatusBadge status="ready">Curriculum snapshot ready</StatusBadge><h2>Create the five-day plan</h2><p>Describe the emphasis you want. The request will still be restricted to approved Unit 1 targets and validation rules.</p></div><form action={requestGeneration} className={styles.commandForm}><input type="hidden" name="kind" value="weekly_plan" /><input type="hidden" name="unitId" value={data.unit.id} /><input type="hidden" name="idempotencyKey" value={randomUUID()} /><label htmlFor="week-request">Parent direction</label><textarea id="week-request" name="parentRequest" minLength={8} required defaultValue="Create a balanced five-day introductory week with gentle review, short movement breaks, and clear exit evidence." /><button type="submit"><SparkIcon size={18} />Generate weekly plan</button><small>Usually takes under a few minutes. The result stays private until you approve it.</small></form></section> : <section className={styles.generatorPanel}><div className={styles.generatorIntro}><StatusBadge status="ready">Approved week available</StatusBadge><h2>Create one lesson</h2><p>Choose the planned day and lesson format. Each version receives its own validation report and approval decision.</p><ActionLink href={`/parent/artifacts/${approvedWeek.id}`} tone="quiet">Review approved week</ActionLink></div><form action={requestGeneration} className={styles.commandForm}><input type="hidden" name="unitId" value={data.unit.id} /><input type="hidden" name="idempotencyKey" value={randomUUID()} /><div className={styles.formPair}><label>Day<select name="day" required defaultValue="1"><option value="1">Day 1</option><option value="2">Day 2</option><option value="3">Day 3</option><option value="4">Day 4</option><option value="5">Day 5</option></select></label><label>Format<select name="kind" required defaultValue="daily_lesson"><option value="daily_lesson">Daily lesson</option><option value="review_lesson">Review lesson</option><option value="story_lesson">Listening story</option></select></label></div><label htmlFor="lesson-request">Parent direction</label><textarea id="lesson-request" name="parentRequest" minLength={8} required defaultValue="Keep the lesson warm, concrete, and varied. Include a movement break and an independent exit check." /><button type="submit"><SparkIcon size={18} />Generate lesson draft</button></form></section>}
 
-        {!readiness.ready && <section className={styles.blockerPanel} aria-labelledby="blocker-title"><span className={styles.cardIcon}><LockIcon size={21} /></span><h2 id="blocker-title">One instructional gate remains</h2><p>{readiness.blockers.join(" ")} Existing approved data is unchanged, and no provider request will run while this gate is closed.</p></section>}
+        <section className={styles.queueSection} aria-labelledby="queue-title"><div className={styles.sectionHeader}><div><p className={styles.eyebrow}>Immutable version history</p><h2 id="queue-title">Approval queue</h2></div><span className={styles.queueCount}>{data.artifacts.length} total</span></div>{data.artifacts.length === 0 ? <div className={styles.emptyQueue}><SparkIcon size={27} /><h3>No generated versions yet</h3><p>Your first validated weekly plan will appear here.</p></div> : <div className={styles.artifactList}>{data.artifacts.map((artifact) => <Link className={styles.artifactRow} href={`/parent/artifacts/${artifact.id}`} key={artifact.id}><span className={`${styles.artifactState} ${styles[`artifactState_${artifact.status}`]}`} aria-hidden="true" /><div><small>{kindLabel[artifact.kind]} · Version {artifact.version}{artifact.day_number ? ` · Day ${artifact.day_number}` : ""}</small><strong>{artifact.status === "validation_failed" ? "Needs regeneration" : artifact.status.replaceAll("_", " ")}</strong><p>{new Date(artifact.created_at).toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" })}</p></div><span className={styles.reviewArrow}>Review →</span></Link>)}</div>}</section>
 
-        <section className={styles.grid} aria-label="Generation safeguards">
-          <article className={styles.infoCard}><span className={styles.cardIcon}><ShieldIcon size={22} /></span><p className={styles.cardLabel}>Privacy</p><h2>Server-only provider</h2><p>The key never reaches the browser. Requests are not stored by the OpenAI API, and logs retain only safe metadata.</p></article>
-          <article className={styles.infoCard}><span className={styles.cardIcon}><SparkIcon size={22} /></span><p className={styles.cardLabel}>Artifacts</p><h2>Four strict contracts</h2><p>Weekly plans, daily lessons, controlled stories, and evidence-bound summaries each use versioned schemas.</p></article>
-          <article className={styles.infoCard}><span className={styles.cardIcon}><CheckIcon size={22} /></span><p className={styles.cardLabel}>Retries</p><h2>Idempotent jobs</h2><p>A repeated request key cannot create duplicate versions or silently change its original request.</p></article>
-        </section>
+        <section className={styles.integrationStrip}><div><span className={styles.cardIcon}><CheckIcon size={21} /></span><div><p className={styles.cardLabel}>Integration status</p><h2>OpenAI and Supabase connected</h2><p>{latestFailure ? `Latest safe provider message: ${latestFailure.safe_error_message}` : "No provider failure is currently recorded. Keys remain server-only."}</p></div></div><small>{readiness.model} · high reasoning · no fallback</small></section>
       </main>
     </ParentShell>
   );

@@ -14,7 +14,8 @@ The first usable scope is one parent-approved Phase A Unit 1 and a five-lesson w
 - Phase 2 implemented and connected on 2026-07-10. Parent authentication activation and curriculum approval remain intentionally pending the parent allowlist email.
 - Phase 3 completed on 2026-07-10 with shared parent/child shells, design tokens, accessible primitives, and standard experience states.
 - Phase 4 completed on 2026-07-10 with strict generation contracts, server-only OpenAI access, deterministic and semantic validation boundaries, curriculum snapshots, and idempotent jobs. Live requests remain correctly locked until the pilot curriculum is parent-approved.
-- Phases 5-9 are not authorized.
+- Phase 5 completed on 2026-07-10 with the parent command center, progressive generation studio, immutable artifact reviews, approval/rejection/regeneration actions, integration status, and database-enforced publication prerequisites. The parent identity is allowlisted; the pilot curriculum still awaits the parent's in-app approval.
+- Phases 6-9 are not authorized.
 
 Before starting any phase, Codex must reopen this file, restate the exact authorized scope, complete only that scope, report the result, and stop. Tests, screenshots, deployment, provider substitutions, plan changes, and work in the next phase require explicit permission where noted.
 

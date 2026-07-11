@@ -20,7 +20,7 @@ Parent access requires all three conditions:
 2. The same email exists in `public.parent_allowlist`.
 3. A corresponding Supabase Auth user has been provisioned administratively.
 
-The allowlist is intentionally empty after migration. Once the parent supplies the email, provision the Auth user and allowlist entry as one administrative operation, then restart the app. Never infer the parent identity from Git or provider ownership.
+The parent Auth user and allowlist entry were provisioned after the parent supplied the address privately. The normalized address is stored only in ignored local configuration and the private Supabase allowlist; it is not committed. Never infer or add another parent identity from Git or provider ownership.
 
 ## Curriculum approval
 

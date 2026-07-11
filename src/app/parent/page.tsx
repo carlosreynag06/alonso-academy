@@ -6,6 +6,7 @@ import { ActionLink } from "@/components/ui/action-link";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { getParentAccessState } from "@/lib/auth/parent";
 import { getProviderReadiness } from "@/lib/generation/readiness";
+import { getGenerationCommandCenter } from "@/lib/generation/repository";
 import { signOutParent } from "./login/actions";
 import styles from "./parent.module.css";
 
@@ -57,6 +58,10 @@ export default async function ParentPage() {
     );
   }
 
+  const commandCenter = await getGenerationCommandCenter();
+  const pending = commandCenter.artifacts.filter((artifact) => artifact.status === "validated" || artifact.status === "validation_failed");
+  const approvedWeek = commandCenter.artifacts.find((artifact) => artifact.kind === "weekly_plan" && artifact.status === "approved");
+
   return (
     <ParentShell identity={access.email}>
       <main className={styles.dashboard} id="main-content">
@@ -66,15 +71,15 @@ export default async function ParentPage() {
         </header>
 
         <section className={styles.heroCard}>
-          <div><StatusBadge status="waiting">Parent review required</StatusBadge><p className={styles.cardLabel}>Current curriculum position</p><h2>Phase A / Unit 1 draft</h2><p>Hello, Listen, and Respond is waiting for your review. Nothing is available to Alonso until you approve it.</p></div>
-          <ActionLink href="/parent/curriculum" tone="light">Review curriculum</ActionLink>
+          <div><StatusBadge status={commandCenter.unit.status === "approved" ? "ready" : "waiting"}>{commandCenter.unit.status === "approved" ? "Curriculum approved" : "Parent review required"}</StatusBadge><p className={styles.cardLabel}>Current curriculum position</p><h2>Phase A / Unit 1</h2><p>{commandCenter.unit.status === "approved" ? "The approved pilot boundary is ready for parent-requested planning. Every generated version remains private until you review it." : "Hello, Listen, and Respond is waiting for your review. Nothing is available to Alonso until you approve it."}</p></div>
+          <ActionLink href={commandCenter.unit.status === "approved" ? "/parent/generation" : `/parent/curriculum/${commandCenter.unit.id}`} tone="light">{commandCenter.unit.status === "approved" ? "Open generation studio" : "Review curriculum"}</ActionLink>
         </section>
 
         <section className={styles.grid} aria-label="Foundation status">
-          <article className={styles.infoCard}><span className={styles.cardIcon}><LockIcon size={22} /></span><p className={styles.cardLabel}>Approval rule</p><h2>Drafts stay private</h2><p>Curriculum targets require an explicit reasoned approval before later generation can use them.</p></article>
+          <article className={styles.infoCard}><span className={styles.cardIcon}><ClockIcon size={22} /></span><p className={styles.cardLabel}>Approval queue</p><h2>{pending.length === 0 ? "Nothing waiting" : `${pending.length} version${pending.length === 1 ? "" : "s"} to review`}</h2><p>{pending.length === 0 ? "Generated plans and lessons will appear here after validation." : "Inspect validation details, rationale, and lesson structure before deciding."}</p><ActionLink href="/parent/generation" tone="quiet">Open queue</ActionLink></article>
           <article className={styles.infoCard}><span className={styles.cardIcon}><ShieldIcon size={22} /></span><p className={styles.cardLabel}>Alonso mode</p><h2>Restricted by design</h2><p>Child sessions use short-lived opaque tokens and cannot query parent data directly.</p></article>
-          <article className={styles.infoCard}><span className={styles.cardIcon}><BookIcon size={22} /></span><p className={styles.cardLabel}>Learning data</p><h2>No activity yet</h2><p>Evidence, mastery, and review remain empty until approved lessons exist.</p></article>
-          <article className={styles.infoCard}><span className={styles.cardIcon}><ClockIcon size={22} /></span><p className={styles.cardLabel}>Generation pipeline</p><h2>Ready, then locked</h2><p>The provider and validators are configured. Requests remain blocked until this curriculum is approved.</p><ActionLink href="/parent/generation" tone="quiet">Inspect readiness</ActionLink></article>
+          <article className={styles.infoCard}><span className={styles.cardIcon}><BookIcon size={22} /></span><p className={styles.cardLabel}>Weekly plan</p><h2>{approvedWeek ? "Approved and ready" : "Not approved yet"}</h2><p>{approvedWeek ? "Individual lessons may now be generated against this exact weekly plan." : "Lesson generation stays locked until a validated five-day plan is approved."}</p></article>
+          <article className={styles.infoCard}><span className={styles.cardIcon}><LockIcon size={22} /></span><p className={styles.cardLabel}>Approval rule</p><h2>Drafts stay private</h2><p>Regeneration creates a new immutable version. Approval never carries forward automatically.</p></article>
         </section>
       </main>
     </ParentShell>

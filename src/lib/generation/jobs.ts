@@ -42,7 +42,20 @@ export async function createOrReuseGenerationJob(input: {
 
 export async function markGenerationJobRunning(jobId: string) {
   const supabase = await createClient();
-  const result = await supabase.from("generation_jobs").update({ status: "running", started_at: new Date().toISOString() }).eq("id", jobId).eq("status", "queued").select("*").maybeSingle();
+  const current = await supabase.from("generation_jobs").select("attempts").eq("id", jobId).single();
+  if (current.error) throw current.error;
+  const result = await supabase.from("generation_jobs").update({ status: "running", attempts: current.data.attempts + 1, started_at: new Date().toISOString() }).eq("id", jobId).eq("status", "queued").select("*").maybeSingle();
+  if (result.error) throw result.error;
+  return result.data;
+}
+
+export async function markGenerationJobSucceeded(jobId: string, artifactId: string) {
+  const supabase = await createClient();
+  const result = await supabase.from("generation_jobs").update({
+    status: "succeeded",
+    artifact_id: artifactId,
+    completed_at: new Date().toISOString(),
+  }).eq("id", jobId).select("*").single();
   if (result.error) throw result.error;
   return result.data;
 }

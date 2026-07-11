@@ -20,7 +20,7 @@
 
 - Supabase SSR clients are created per request and use the publishable key plus user cookies.
 - `src/proxy.ts` refreshes authentication cookies but does not replace database authorization.
-- All 19 exposed application tables have RLS enabled; anonymous access has no policies.
+- All 20 exposed application tables have RLS enabled; anonymous access has no policies.
 - Parent authorization requires both the configured local email and a matching database allowlist row.
 - Public signup and anonymous sign-in are disabled in hosted and local Supabase Auth configuration.
 - Child sessions store only SHA-256 token hashes and are designed for server-mediated access to one approved lesson.
@@ -48,4 +48,14 @@ Content Security Policy is intentionally deferred until provider transports and 
 - `src/lib/generation/provider.ts` is server-only, fixes instructional work to `gpt-5.5` with high reasoning, disables API-side response storage, and has no fallback path.
 - Deterministic schema and curriculum checks run before semantic validation. Model judgment cannot override a code-level failure.
 - `generation_jobs` provides one request hash per idempotency key, bounded attempts, safe failure fields, and parent-only RLS.
-- `validated` is still private. Phase 5 must add explicit parent approval and immutable publication transitions before anything is child-readable.
+- `validated` is still private. Explicit parent approval produces a distinct audited state, and child delivery remains absent until Phase 6.
+
+## Phase 5 parent-control boundary
+
+- Parent actions call `getParentAccessState` before every generation, approval, rejection, or regeneration mutation; RLS and security-definer RPC checks independently enforce the same boundary.
+- The command center progresses from curriculum approval, to weekly-plan generation, to weekly approval, to individual lesson generation. Missing prerequisites remain visible and fail closed.
+- Artifact lineage is explicit. A lineage key plus version is unique, regeneration points to the previous version, and approval records apply to one artifact ID only.
+- `approve_generated_artifact` accepts only `validated` artifacts whose stored curriculum unit version and approval timestamp still match the current approved unit.
+- Non-week artifacts additionally require their exact parent weekly plan to remain approved.
+- Rejection archives rather than deletes the version and preserves the parent's note in append-only approval and audit history.
+- No child query or lesson renderer is introduced in this phase.

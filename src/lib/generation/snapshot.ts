@@ -28,10 +28,10 @@ export async function buildApprovedCurriculumSnapshot(unitId: string): Promise<S
   if (queryError) throw queryError;
 
   const targets: CurriculumScope["targets"] = [
-    ...vocabularyResult.data.map((item) => ({ id: item.id, text: item.canonical_text, kind: "vocabulary" as const, oralReady: item.oral_ready, readingReady: item.reading_ready, writingReady: item.writing_ready })),
-    ...framesResult.data.map((item) => ({ id: item.id, text: item.frame, kind: "sentence_frame" as const, oralReady: true, readingReady: item.mode !== "oral_only", writingReady: item.mode === "writable" || item.mode === "fully_active" })),
-    ...phonicsResult.data.map((item) => ({ id: item.id, text: [item.phoneme, item.grapheme].filter(Boolean).join(" / "), kind: "phonics" as const, oralReady: true, readingReady: item.reading_allowed, writingReady: false })),
-    ...writingResult.data.map((item) => ({ id: item.id, text: item.title, kind: "writing" as const, oralReady: false, readingReady: false, writingReady: true })),
+    ...(vocabularyResult.data ?? []).map((item) => ({ id: item.id, text: item.canonical_text, kind: "vocabulary" as const, oralReady: item.oral_ready, readingReady: item.reading_ready, writingReady: item.writing_ready })),
+    ...(framesResult.data ?? []).map((item) => ({ id: item.id, text: item.frame, kind: "sentence_frame" as const, oralReady: true, readingReady: item.mode !== "oral_only", writingReady: item.mode === "writable" || item.mode === "fully_active" })),
+    ...(phonicsResult.data ?? []).map((item) => ({ id: item.id, text: [item.phoneme, item.grapheme].filter(Boolean).join(" / "), kind: "phonics" as const, oralReady: true, readingReady: item.reading_allowed, writingReady: false })),
+    ...(writingResult.data ?? []).map((item) => ({ id: item.id, text: item.title, kind: "writing" as const, oralReady: false, readingReady: false, writingReady: true })),
   ];
 
   if (targets.length === 0) {
