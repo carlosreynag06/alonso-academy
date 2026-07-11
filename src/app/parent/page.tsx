@@ -11,6 +11,7 @@ import { getProviderReadiness } from "@/lib/generation/readiness";
 import { getGenerationCommandCenter } from "@/lib/generation/repository";
 import { signOut } from "../login/actions";
 import styles from "./parent.module.css";
+import overview from "./overview.module.css";
 
 export const metadata: Metadata = { title: "Parent Command Center | Alonso Academy" };
 
@@ -63,28 +64,28 @@ export default async function ParentPage() {
 
   return (
     <ParentShell identity={access.email}>
-      <main className={`${styles.dashboard} ${styles.overviewDashboard}`} id="main-content">
-        <header className={styles.overviewHeader}>
-          <div><p className={styles.overline}>Alonso’s learning system</p><h1>Good evening, {access.displayName}.</h1><p>One clear view of what is approved, what needs attention, and what comes next.</p></div>
-          <div className={styles.headerTools}><span><i />All systems private</span><form action={signOut}><button className={styles.secondaryButton}>Sign out</button></form></div>
+      <main className={overview.page} id="main-content">
+        <header className={overview.header}>
+          <div><p className={overview.kicker}>Parent workspace</p><h1>Good evening, {access.displayName}.</h1><p>Alonso’s current learning position, decisions, and next step.</p></div>
+          <div className={overview.headerTools}><span><i />Private</span><form action={signOut}><button>Sign out</button></form></div>
         </header>
 
-        <section className={styles.controlHero} aria-labelledby="next-action-title">
-          <div className={styles.controlCopy}><p className={styles.overline}>{nextAction.eyebrow}</p><h2 id="next-action-title">{nextAction.title}</h2><p>{nextAction.copy}</p><ActionLink href={nextAction.href} tone="light">{nextAction.label}</ActionLink></div>
-          <div className={styles.phasePortrait} aria-label="Current curriculum: Phase A, Unit 1"><div className={styles.phaseLetter}>A</div><div><span>Current position</span><strong>Unit 1</strong><small>Hello, Listen, and Respond</small></div><StatusBadge status={commandCenter.unit.status === "approved" ? "ready" : "waiting"}>{commandCenter.unit.status}</StatusBadge></div>
+        <section className={overview.focus} aria-labelledby="next-action-title">
+          <div className={overview.focusCopy}><p className={overview.kicker}>{nextAction.eyebrow}</p><h2 id="next-action-title">{nextAction.title}</h2><p>{nextAction.copy}</p><ActionLink href={nextAction.href}>{nextAction.label}</ActionLink><div className={overview.focusMarks} aria-hidden="true"><i /><i /><i /></div></div>
+          <div className={overview.position} aria-label="Current curriculum: Phase A, Unit 1"><div className={overview.phaseGlyph}>A<span>01</span></div><div className={overview.positionCopy}><p>Current position</p><strong>Phase A · Unit 1</strong><small>Hello, Listen, and Respond</small></div><StatusBadge status={commandCenter.unit.status === "approved" ? "ready" : "waiting"}>{commandCenter.unit.status}</StatusBadge></div>
         </section>
 
-        <section className={styles.learningPath} aria-labelledby="path-title"><div className={styles.pathIntro}><p className={styles.overline}>Pilot workflow</p><h2 id="path-title">From curriculum to lesson</h2></div><ol className={styles.pathSteps}>
-          {[{ n: 1, label: "Curriculum", detail: commandCenter.unit.status === "approved" ? "Approved" : "Needs review" }, { n: 2, label: "Weekly plan", detail: approvedWeek ? "Approved" : "Not started" }, { n: 3, label: "Five lessons", detail: `${approvedLessons.length} approved` }, { n: 4, label: "Alonso", detail: approvedLessons.length >= 5 ? "Ready" : "Locked" }].map((step) => <li className={step.n < currentStep ? styles.pathComplete : step.n === currentStep ? styles.pathCurrent : styles.pathFuture} key={step.n}><span>{step.n < currentStep ? <CheckIcon size={15} /> : step.n}</span><div><strong>{step.label}</strong><small>{step.detail}</small></div></li>)}
+        <section className={overview.journey} aria-labelledby="path-title"><div className={overview.journeyTitle}><p className={overview.kicker}>Learning sequence</p><h2 id="path-title">Curriculum → Alonso</h2></div><ol className={overview.steps}>
+          {[{ n: 1, label: "Curriculum", detail: commandCenter.unit.status === "approved" ? "Approved" : "Needs review" }, { n: 2, label: "Weekly plan", detail: approvedWeek ? "Approved" : "Not started" }, { n: 3, label: "Lessons", detail: `${approvedLessons.length} of 5` }, { n: 4, label: "Ready", detail: approvedLessons.length >= 5 ? "Available" : "Locked" }].map((step) => <li className={step.n < currentStep ? overview.done : step.n === currentStep ? overview.now : overview.later} key={step.n}><span>{step.n < currentStep ? <CheckIcon size={14} /> : step.n}</span><div><strong>{step.label}</strong><small>{step.detail}</small></div></li>)}
         </ol></section>
 
-        <div className={styles.overviewColumns}>
-          <section className={styles.decisionDesk} aria-labelledby="desk-title"><header><div><p className={styles.overline}>Decision desk</p><h2 id="desk-title">{pending.length ? `${pending.length} item${pending.length === 1 ? "" : "s"} need your judgment` : "Nothing waiting for approval"}</h2></div><Link href="/parent/generation">View all versions →</Link></header>{pending.length ? <div className={styles.decisionList}>{pending.slice(0, 3).map((artifact) => <Link href={`/parent/artifacts/${artifact.id}`} key={artifact.id}><span className={styles.decisionIcon}>{artifact.status === "validated" ? <CheckIcon size={17} /> : <ClockIcon size={17} />}</span><div><strong>{kindLabels[artifact.kind] ?? artifact.kind}</strong><small>Version {artifact.version} · {artifact.status.replaceAll("_", " ")}</small></div><b>Review</b></Link>)}</div> : <div className={styles.deskEmpty}><span><SparkIcon size={22} /></span><div><strong>Your review queue is clear.</strong><p>The next generated plan or lesson will arrive here with its validation report attached.</p></div></div>}</section>
+        <div className={overview.lower}>
+          <section className={overview.decisions} aria-labelledby="desk-title"><header><div><p className={overview.kicker}>Decision desk</p><h2 id="desk-title">{pending.length ? `${pending.length} item${pending.length === 1 ? "" : "s"} need your judgment` : "Queue clear"}</h2></div><Link href="/parent/generation">All versions →</Link></header>{pending.length ? <div className={overview.decisionList}>{pending.slice(0, 3).map((artifact) => <Link href={`/parent/artifacts/${artifact.id}`} key={artifact.id}><span>{artifact.status === "validated" ? <CheckIcon size={16} /> : <ClockIcon size={16} />}</span><div><strong>{kindLabels[artifact.kind] ?? artifact.kind}</strong><small>Version {artifact.version} · {artifact.status.replaceAll("_", " ")}</small></div><b>Review</b></Link>)}</div> : <div className={overview.empty}><span><SparkIcon size={20} /></span><div><strong>No decisions waiting.</strong><p>Validated plans and lessons will appear here.</p></div></div>}</section>
 
-          <aside className={styles.unitBrief} aria-labelledby="unit-brief-title"><div className={styles.briefTop}><span><BookIcon size={20} /></span><p className={styles.overline}>Approved boundary</p><h2 id="unit-brief-title">Unit 1 at a glance</h2></div><dl><div><dt>Oral vocabulary</dt><dd>10 targets</dd></div><div><dt>Sentence frames</dt><dd>4 frames</dd></div><div><dt>Sound anchors</dt><dd>2 sounds</dd></div><div><dt>Lesson rhythm</dt><dd>15 minutes</dd></div></dl><Link href={`/parent/curriculum/${commandCenter.unit.id}`}>Inspect full boundary →</Link></aside>
+          <aside className={overview.boundary} aria-labelledby="unit-brief-title"><header><span><BookIcon size={18} /></span><div><p className={overview.kicker}>Unit boundary</p><h2 id="unit-brief-title">A–U1</h2></div></header><dl><div><dt>Vocabulary</dt><dd>10</dd></div><div><dt>Frames</dt><dd>4</dd></div><div><dt>Sounds</dt><dd>2</dd></div><div><dt>Minutes</dt><dd>15</dd></div></dl><Link href={`/parent/curriculum/${commandCenter.unit.id}`}>Inspect curriculum →</Link><div className={overview.boundaryAccent} aria-hidden="true" /></aside>
         </div>
 
-        <footer className={styles.integrityBar}><div><ShieldIcon size={17} /><span><strong>Parent-controlled publication</strong> · drafts never reach Alonso</span></div><div><LockIcon size={16} /><span>Two verified family accounts</span></div></footer>
+        <footer className={overview.footer}><span><ShieldIcon size={16} />Parent-controlled publication</span><i /><span><LockIcon size={15} />Drafts never reach Alonso</span></footer>
       </main>
     </ParentShell>
   );
