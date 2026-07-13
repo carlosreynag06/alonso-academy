@@ -1,6 +1,16 @@
 import "server-only";
 
-import type { DailyLessonDraft } from "@/lib/generation/contracts";
+import type { LessonBlock } from "@/lib/generation/contracts";
+import {
+  authoritativeAttemptSnapshotSchema,
+  childAttemptRuntimePayloadSchema,
+  childLessonHomeSchema,
+  childSafeLessonBlockSchema,
+  childSafeLessonSchema,
+  type AuthoritativeAttemptSnapshot,
+  type ChildAttemptRuntimePayload,
+  type ChildSafeLesson,
+} from "@/lib/lesson/runtime-contracts";
 import type { Database, Json } from "@/types/database";
 import { FIXTURE_IDS } from "./catalog";
 import type { DevelopmentFixtureState } from "./contracts";
@@ -158,6 +168,12 @@ function weeklyArtifactRow(state: DevelopmentFixtureState): ArtifactRow | null {
     lineage_key: "fixture:weekly",
     parent_artifact_id: null,
     day_number: null,
+    week_day_slot_id: null,
+    binding_status: "not_applicable",
+    binding_report: null,
+    binding_validated_at: null,
+    runtime_ready: false,
+    runtime_report: null,
     created_by: FIXTURE_IDS.actor,
     created_at: CREATED_AT,
     updated_at: UPDATED_AT,
@@ -174,7 +190,9 @@ function lessonArtifactRows(state: DevelopmentFixtureState): ArtifactRow[] {
       kind: plannedDay?.lessonKind ?? "daily_lesson",
       status: lesson.status,
       version: lesson.version,
-      previous_version_id: null,
+      previous_version_id: lesson.version > 1
+        ? state.catalog.lessons.find((candidate) => candidate.slotId === lesson.slotId && candidate.version === lesson.version - 1)?.id ?? null
+        : null,
       curriculum_unit_id: state.catalog.curriculum.id,
       curriculum_snapshot: asJson(state.catalog.curriculum.scope ?? { snapshotId: SNAPSHOT_FALLBACK, fixtureOnly: true }),
       content: asJson(lesson.content),
@@ -187,6 +205,12 @@ function lessonArtifactRows(state: DevelopmentFixtureState): ArtifactRow[] {
       lineage_key: `fixture:${weeklyPlan.id}:day-${lesson.day}:${plannedDay?.lessonKind ?? "daily_lesson"}`,
       parent_artifact_id: weeklyPlan.id,
       day_number: lesson.day,
+      week_day_slot_id: lesson.slotId,
+      binding_status: "valid",
+      binding_report: { fixtureOnly: true, exactSlot: true },
+      binding_validated_at: UPDATED_AT,
+      runtime_ready: lesson.status === "validated" || lesson.status === "approved",
+      runtime_report: { fixtureOnly: true, childSafe: true },
       created_by: FIXTURE_IDS.actor,
       created_at: `2026-07-0${lesson.day + 1}T14:00:00.000Z`,
       updated_at: `2026-07-0${lesson.day + 1}T14:20:00.000Z`,
@@ -240,8 +264,8 @@ function approvalForArtifact(artifact: ArtifactRow): ApprovalRow[] {
 
 export type FixtureCurriculumOverview = { phases: PhaseRow[]; units: UnitRow[] };
 export type FixtureCurriculumUnit = ReturnType<typeof targetRows> & { unit: UnitRow };
-export type FixtureGenerationCommandCenter = { unit: UnitRow; artifacts: ArtifactRow[]; jobs: JobRow[] };
-export type FixtureArtifactReview = { artifact: ArtifactRow; approvals: ApprovalRow[]; children: ArtifactRow[] };
+export type FixtureGenerationCommandCenter = { unit: UnitRow; artifacts: ArtifactRow[]; jobs: JobRow[]; slots: DevelopmentFixtureState["catalog"]["slots"]; assignments: DevelopmentFixtureState["catalog"]["assignments"] };
+export type FixtureArtifactReview = { artifact: ArtifactRow; approvals: ApprovalRow[]; children: ArtifactRow[]; slot: DevelopmentFixtureState["catalog"]["slots"][number] | null; assignments: DevelopmentFixtureState["catalog"]["assignments"] };
 
 export function getFixtureCurriculumOverview(state: DevelopmentFixtureState): FixtureCurriculumOverview {
   return { phases: phaseRows(state), units: [unitRow(state)] };
@@ -253,7 +277,7 @@ export function getFixtureCurriculumUnit(state: DevelopmentFixtureState, unitId:
 }
 
 export function getFixtureGenerationCommandCenter(state: DevelopmentFixtureState): FixtureGenerationCommandCenter {
-  return { unit: unitRow(state), artifacts: artifactRows(state), jobs: generationJobRows(state) };
+  return { unit: unitRow(state), artifacts: artifactRows(state), jobs: generationJobRows(state), slots: structuredClone(state.catalog.slots), assignments: structuredClone(state.catalog.assignments) };
 }
 
 export function getFixtureArtifactReview(state: DevelopmentFixtureState, artifactId: string): FixtureArtifactReview {
@@ -266,6 +290,10 @@ export function getFixtureArtifactReview(state: DevelopmentFixtureState, artifac
     children: artifact.kind === "weekly_plan"
       ? artifacts.filter((candidate) => candidate.parent_artifact_id === artifact.id).sort((a, b) => (a.day_number ?? 0) - (b.day_number ?? 0))
       : [],
+    slot: state.catalog.lessons.find((lesson) => lesson.id === artifact.id)
+      ? state.catalog.slots.find((slot) => slot.id === state.catalog.lessons.find((lesson) => lesson.id === artifact.id)!.slotId) ?? null
+      : null,
+    assignments: structuredClone(state.catalog.assignments.filter((assignment) => assignment.lessonArtifactId === artifact.id || artifact.kind === "weekly_plan")),
   };
 }
 
@@ -275,88 +303,77 @@ export function getFixtureLatestApprovedWeeklyPlan(state: DevelopmentFixtureStat
   return weeklyPlan?.status === "approved" ? weeklyPlan : null;
 }
 
-export type FixtureChildLessonRecord = {
-  id: string;
-  kind: string;
-  version: number;
-  dayNumber: number | null;
-  content: DailyLessonDraft;
-  lesson: DailyLessonDraft;
-};
+function options(labels: string[], blockId: string) { return labels.map((label, index) => ({ key: `${blockId}-option-${index + 1}`, label })); }
 
-export type FixtureChildLessonHome = {
-  child: { id: string; preferredName: string };
-  currentAttempt: { id: string; lessonId: string; status: string; currentBlockIndex: number; breakCount: number } | null;
-  lessons: FixtureChildLessonRecord[];
-};
-
-function childLessonRecords(state: DevelopmentFixtureState): FixtureChildLessonRecord[] {
-  const completedLessonIds = new Set(state.catalog.attempts
-    .filter((attempt) => attempt.status === "completed")
-    .map((attempt) => attempt.lessonArtifactId));
-  return lessonArtifactRows(state)
-    .filter((artifact) => artifact.status === "approved" && !completedLessonIds.has(artifact.id))
-    .map((artifact) => {
-      const lesson = state.catalog.lessons.find((candidate) => candidate.id === artifact.id)!;
-      return {
-        id: artifact.id,
-        kind: artifact.kind,
-        version: artifact.version,
-        dayNumber: artifact.day_number,
-        content: lesson.content,
-        lesson: lesson.content,
-      };
-    });
+function safeBlock(block: LessonBlock) {
+  const base = { id: block.id, estimatedSeconds: block.estimatedSeconds, instruction: block.instruction };
+  if (block.type === "model_audio") return childSafeLessonBlockSchema.parse({ ...base, type: block.type, modelText: block.modelText, replayAllowed: block.replayAllowed });
+  if (block.type === "listen_select") return childSafeLessonBlockSchema.parse({ ...base, type: block.type, promptText: block.promptText, options: options(block.options, block.id) });
+  if (block.type === "picture_action_select") return childSafeLessonBlockSchema.parse({ ...base, type: block.type, promptText: block.promptText, options: options(block.optionLabels, block.id) });
+  if (block.type === "phonemic_awareness") return childSafeLessonBlockSchema.parse({ ...base, type: block.type, promptText: block.promptText, responseMode: block.responseMode, responseOptions: options(block.acceptableResponses, block.id) });
+  if (block.type === "letter_work") return childSafeLessonBlockSchema.parse({ ...base, type: block.type, grapheme: block.grapheme, demand: block.demand, modelText: block.modelText, options: options(Array.from(new Set([block.grapheme, "m", "s"])).slice(0, 3), block.id) });
+  if (block.type === "movement_break") return childSafeLessonBlockSchema.parse({ ...base, type: block.type, movement: block.movement });
+  if (block.type === "exit_check") return childSafeLessonBlockSchema.parse({ ...base, type: block.type, promptText: block.promptText, responseOptions: options(block.acceptableResponses, block.id) });
+  return null;
 }
 
-export function getFixtureChildLessonHome(state: DevelopmentFixtureState): FixtureChildLessonHome {
-  const lessons = childLessonRecords(state);
-  const activeAttempt = state.activeAttemptId
-    ? state.catalog.attempts.find((attempt) => attempt.id === state.activeAttemptId) ?? null
-    : null;
-  const currentAttempt = activeAttempt && lessons.some((lesson) => lesson.id === activeAttempt.lessonArtifactId)
-    ? {
-      id: activeAttempt.id,
-      lessonId: activeAttempt.lessonArtifactId,
-      status: activeAttempt.status,
-      currentBlockIndex: activeAttempt.currentBlockIndex,
-      breakCount: activeAttempt.breakCount,
-    }
-    : null;
-  return {
+export function getFixtureChildSafeLesson(state: DevelopmentFixtureState, assignmentId: string): ChildSafeLesson {
+  const assignment = state.catalog.assignments.find((candidate) => candidate.id === assignmentId);
+  if (!assignment) throw new Error("Fixture assignment not found.");
+  const lesson = state.catalog.lessons.find((candidate) => candidate.id === assignment.lessonArtifactId);
+  if (!lesson || lesson.status !== "approved" || lesson.publicationState !== "approved_private") throw new Error("Fixture approved-private lesson not found.");
+  return childSafeLessonSchema.parse({
+    artifactId: lesson.id, day: lesson.day, title: lesson.content.title, objective: lesson.content.objective, durationMinutes: lesson.content.durationMinutes,
+    blocks: lesson.content.blocks.flatMap((block) => { const safe = safeBlock(block); return safe ? [safe] : []; }),
+    remediation: { scaffoldInstruction: lesson.content.remediation.scaffoldInstruction },
+  });
+}
+
+function feedback(value: unknown) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  const candidate = value as Record<string, unknown>;
+  return typeof candidate.tone === "string" && typeof candidate.title === "string" && typeof candidate.message === "string" ? candidate : null;
+}
+
+export function getFixtureAttemptSnapshot(attempt: DevelopmentFixtureState["catalog"]["attempts"][number]): AuthoritativeAttemptSnapshot {
+  const blockState = attempt.currentBlockId ? attempt.blockStates.find((block) => block.blockId === attempt.currentBlockId) ?? null : null;
+  const selectedOptionKey = typeof attempt.playerState.selectedOptionKey === "string" ? attempt.playerState.selectedOptionKey : null;
+  const visibleOptionKeys = Array.isArray(attempt.playerState.visibleOptionKeys) && attempt.playerState.visibleOptionKeys.every((key) => typeof key === "string") ? attempt.playerState.visibleOptionKeys : null;
+  const outcome = typeof attempt.playerState.outcome === "string" ? attempt.playerState.outcome : null;
+  const completed = attempt.blockStates.filter((block) => block.status === "completed" || block.status === "passed").length;
+  return authoritativeAttemptSnapshotSchema.parse({
+    attemptId: attempt.id, assignmentId: attempt.assignmentId, attemptMode: attempt.mode,
+    status: attempt.status === "not_started" ? "in_progress" : attempt.status,
+    stateVersion: attempt.stateVersion, currentBlockId: attempt.currentBlockId, currentBlockIndex: attempt.currentBlockIndex,
+    viewMode: attempt.viewMode,
+    retryCount: blockState?.incorrectCount ?? 0, supportLevel: blockState?.supportLevel ?? "independent", selectedOptionKey,
+    visibleOptionKeys, outcome, feedback: feedback(attempt.playerState.feedback),
+    fallbackAvailable: attempt.playerState.fallbackAvailable === true, canAdvance: attempt.playerState.canAdvance === true,
+    breakCount: attempt.breakCount, progress: { completed, total: attempt.blockStates.length },
+  });
+}
+
+function childAssignment(state: DevelopmentFixtureState, assignment: DevelopmentFixtureState["catalog"]["assignments"][number], mode: "learning" | "replay" | "scheduled_retrieval") {
+  const slot = state.catalog.slots.find((candidate) => candidate.id === assignment.slotId)!;
+  const lesson = state.catalog.lessons.find((candidate) => candidate.id === assignment.lessonArtifactId)!;
+  const attempt = state.catalog.attempts.find((candidate) => candidate.assignmentId === assignment.id && candidate.mode === mode && ["in_progress", "paused"].includes(candidate.status)) ?? null;
+  return { id: assignment.id, lessonArtifactId: lesson.id, mode, state: assignment.status === "published" ? "published" : assignment.status === "completed" ? "completed" : "scheduled", day: slot.dayNumber, title: lesson.content.title, objective: lesson.content.objective, durationMinutes: lesson.content.durationMinutes, activeAttemptId: attempt?.id ?? null };
+}
+
+export function getFixtureChildLessonHome(state: DevelopmentFixtureState) {
+  const published = state.catalog.assignments.find((assignment) => assignment.status === "published") ?? null;
+  return childLessonHomeSchema.parse({
     child: { id: FIXTURE_IDS.child, preferredName: "Alonso" },
-    currentAttempt,
-    lessons,
-  };
+    todayAssignment: published ? childAssignment(state, published, "learning") : null,
+    replayAssignments: state.catalog.assignments.filter((assignment) => assignment.status === "completed").map((assignment) => childAssignment(state, assignment, "replay")),
+    retrievalAssignments: state.catalog.assignments.filter((assignment) => assignment.status === "scheduled").map((assignment) => childAssignment(state, assignment, "scheduled_retrieval")),
+  });
 }
 
-export type FixtureChildLessonAttempt = {
-  attempt: { id: string; status: string; currentBlockIndex: number; breakCount: number; playerState: unknown };
-  lesson: { id: string; kind: string; version: number; dayNumber: number | null; content: DailyLessonDraft };
-};
-
-export function getFixtureChildLessonAttempt(state: DevelopmentFixtureState, attemptId: string): FixtureChildLessonAttempt {
+export function getFixtureChildLessonAttempt(state: DevelopmentFixtureState, attemptId: string): ChildAttemptRuntimePayload {
   const attempt = state.catalog.attempts.find((candidate) => candidate.id === attemptId);
   if (!attempt) throw new Error("Fixture lesson attempt not found.");
-  const artifact = lessonArtifactRows(state).find((candidate) => candidate.id === attempt.lessonArtifactId);
-  const lesson = state.catalog.lessons.find((candidate) => candidate.id === attempt.lessonArtifactId);
-  if (!artifact || !lesson || artifact.status !== "approved") throw new Error("Fixture approved lesson not found.");
-  return {
-    attempt: {
-      id: attempt.id,
-      status: attempt.status,
-      currentBlockIndex: attempt.currentBlockIndex,
-      breakCount: attempt.breakCount,
-      playerState: attempt.playerState,
-    },
-    lesson: {
-      id: artifact.id,
-      kind: artifact.kind,
-      version: artifact.version,
-      dayNumber: artifact.day_number,
-      content: lesson.content,
-    },
-  };
+  return childAttemptRuntimePayloadSchema.parse({ lesson: getFixtureChildSafeLesson(state, attempt.assignmentId), snapshot: getFixtureAttemptSnapshot(attempt) });
 }
 
 export type FixtureRecoveryBaseline = {
@@ -368,6 +385,9 @@ export type FixtureRecoveryBaseline = {
   reviewCount: number;
   providerEvents: Array<{ provider: string; status: string }>;
   providers: { supabase: boolean; openAi: boolean; elevenLabsKey: boolean; approvedVoice: boolean; audioReady: boolean };
+  slotCount: number;
+  assignmentCounts: Record<string, number>;
+  hostedPublication: false;
 };
 
 export function getFixtureRecoveryBaseline(state: DevelopmentFixtureState): FixtureRecoveryBaseline {
@@ -378,6 +398,7 @@ export function getFixtureRecoveryBaseline(state: DevelopmentFixtureState): Fixt
     return counts;
   }, {});
   const simulatedAudioReady = state.providers.tts === "success";
+  const assignmentCounts = state.catalog.assignments.reduce<Record<string, number>>((counts, assignment) => { counts[assignment.status] = (counts[assignment.status] ?? 0) + 1; return counts; }, {});
   return {
     curriculum: {
       id: state.catalog.curriculum.id,
@@ -398,5 +419,8 @@ export function getFixtureRecoveryBaseline(state: DevelopmentFixtureState): Fixt
       approvedVoice: simulatedAudioReady,
       audioReady: simulatedAudioReady,
     },
+    slotCount: state.catalog.slots.length,
+    assignmentCounts,
+    hostedPublication: false,
   };
 }

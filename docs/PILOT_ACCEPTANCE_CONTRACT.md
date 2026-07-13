@@ -14,6 +14,12 @@ Fixtures may be used to develop and demonstrate state handling before the final 
 
 Formal test execution, browser screenshots, child-usability observation, and deployment require the explicit permissions specified in `PHASE_PLAN.md`. Until those permissions are granted and the relevant proof is collected, affected items remain unverified.
 
+## Recovery 1 implementation handoff
+
+As of 2026-07-12, the repository contains an `implemented` Recovery 1 foundation for checklist rows 2, 4, 7, and 8: exact five-day slots, private approval, explicit assignment/publication/replacement/withdrawal, assignment-bound attempts, idempotent server commands, server-derived evidence, and fail-closed completion. The exact contract and exclusions are in `docs/RECOVERY_1_DOMAIN.md`.
+
+This is not acceptance evidence. Hosted migration application has not been established; no formal authorization/RLS, lifecycle, reload, stale-command, evidence, responsive, screenshot, provider, or child-usability proof is recorded. No checklist row passes merely because Recovery 1 is implemented, and live speech, mastery/review, character assets, final UI, and the complete pilot remain unverified or unimplemented as assigned below.
+
 ## Final ten-step acceptance checklist
 
 | # | Required outcome | Objective proof required | Failure conditions | Evidence owner |

@@ -6,6 +6,8 @@ This document records the truthful product baseline at the start of the Alonso A
 
 Recovery 0 permits truth reset, isolated fixtures, inventories, and acceptance documentation only. Product redesign, schema-v2 behavior, provider activation, publication-model changes, and mastery logic belong to later recovery phases.
 
+**Recovery 1 handoff (2026-07-12):** this file remains the historical pre-Recovery-1 baseline and capability-language authority. The repository now contains the implemented Recovery 1 domain/publication/attempt contract documented in `docs/RECOVERY_1_DOMAIN.md`; its migration is not claimed as applied to hosted Supabase and its behavior is not verified. Where this baseline says publication or evidence authority is `blocked`, read that as the condition Recovery 1 was implemented to supersede, not as a new verification result.
+
 ## Capability language
 
 These labels describe product capability, not effort or file count.
@@ -187,3 +189,5 @@ Existing migrations remain immutable history and must not be edited retroactivel
 - The only authoritative pilot acceptance checklist is `docs/PILOT_ACCEPTANCE_CONTRACT.md`.
 
 Recovery 0 does not verify the recovered product. It establishes the contract by which subsequent work will be judged.
+
+Recovery 1 inherits the same proof standard: committed schema, RPC, route, and fixture code can earn `implemented`, but only objective authorized evidence against the intended running system can earn `verified`. Synthetic fixtures and documentation cannot satisfy the pilot acceptance contract.

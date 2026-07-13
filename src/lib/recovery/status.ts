@@ -6,12 +6,15 @@ import { getDevelopmentFixtureSource } from "@/lib/development-fixtures/source";
 import { getFixtureRecoveryBaseline } from "@/lib/development-fixtures/adapters";
 
 export const ACTIVE_RECOVERY = {
-  phase: "Recovery 0",
-  title: "Truth reset, fixtures, and acceptance contract",
+  phase: "Recovery 1",
+  title: "Authoritative domain, publication, and evidence model",
   status: "implemented" as const,
-  productMutationsLocked: true,
-  childDeliveryLocked: true,
-  nextBlocker: "Complete the authoritative publication and evidence model in Recovery 1.",
+  productMutationsLocked: false,
+  generationLocked: true,
+  curriculumDecisionsLocked: true,
+  childDeliveryLocked: false,
+  liveSpeechLocked: true,
+  nextBlocker: "Approve the instructional design, character world, and adult interface direction in Recovery 2.",
 };
 
 export const RECOVERY_STATUS_DEFINITIONS = [
@@ -23,14 +26,14 @@ export const RECOVERY_STATUS_DEFINITIONS = [
 ] as const;
 
 export function recoveryLockMessage() {
-  return "Product mutations are paused during Recovery 0 so incomplete scaffolding cannot create new pilot decisions.";
+  return "Generation and curriculum editing remain paused while Recovery 1 exposes only audited publication and attempt transitions.";
 }
 
 export async function getRecoveryBaseline() {
   const fixture = await getDevelopmentFixtureSource();
   if (fixture) return getFixtureRecoveryBaseline(fixture.state);
   const supabase = await createClient();
-  const [unit, artifacts, attempts, evidence, mastery, reviews, providerEvents] = await Promise.all([
+  const [unit, artifacts, attempts, evidence, mastery, reviews, providerEvents, slots, assignments] = await Promise.all([
     supabase.from("curriculum_units").select("id, code, status, approved_at").eq("code", "A-U1").maybeSingle(),
     supabase.from("generated_artifacts").select("kind, status, day_number"),
     supabase.from("lesson_attempts").select("id, status"),
@@ -38,8 +41,10 @@ export async function getRecoveryBaseline() {
     supabase.from("mastery_records").select("id", { count: "exact", head: true }),
     supabase.from("review_schedules").select("id", { count: "exact", head: true }),
     supabase.from("provider_metadata").select("provider, status"),
+    supabase.from("week_day_slots").select("id", { count: "exact", head: true }),
+    supabase.from("lesson_assignments").select("status"),
   ]);
-  const firstError = unit.error ?? artifacts.error ?? attempts.error ?? evidence.error ?? mastery.error ?? reviews.error ?? providerEvents.error;
+  const firstError = unit.error ?? artifacts.error ?? attempts.error ?? evidence.error ?? mastery.error ?? reviews.error ?? providerEvents.error ?? slots.error ?? assignments.error;
   if (firstError) throw firstError;
 
   const artifactCounts = (artifacts.data ?? []).reduce<Record<string, number>>((counts, artifact) => {
@@ -49,6 +54,10 @@ export async function getRecoveryBaseline() {
   }, {});
   const elevenLabs = getElevenLabsConfiguration();
   const openAiConfigured = Boolean(process.env.OPENAI_API_KEY?.trim());
+  const assignmentCounts = (assignments.data ?? []).reduce<Record<string, number>>((counts, assignment) => {
+    counts[assignment.status] = (counts[assignment.status] ?? 0) + 1;
+    return counts;
+  }, {});
 
   return {
     curriculum: unit.data ?? null,
@@ -65,5 +74,8 @@ export async function getRecoveryBaseline() {
       approvedVoice: Boolean(elevenLabs.voiceId),
       audioReady: elevenLabs.ready,
     },
+    slotCount: slots.count ?? 0,
+    assignmentCounts,
+    hostedPublication: true as const,
   };
 }

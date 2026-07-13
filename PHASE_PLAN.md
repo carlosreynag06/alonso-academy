@@ -23,11 +23,11 @@ No work may continue to the former Phase 8 implementation. The recovery phases b
 | Previous phase | Current assessment |
 | --- | --- |
 | Repository foundation | **Verified foundation.** Next.js, TypeScript, npm, GitHub, environment isolation, and local server operation exist. |
-| Data and authentication | **Connected foundation.** Two password accounts, Supabase, initial RLS, curriculum tables, and audit concepts exist. Authorization and mutation boundaries require hardening during recovery. |
+| Data and authentication | **Recovery 1 domain implemented in the repository.** Two password accounts, Supabase foundations, narrow mutation RPCs, parent-only table reads, assignment-bound child functions, and audit concepts exist. Hosted migration application and identity-policy behavior are not verified. |
 | Visual system | **Rejected.** The parent experience is not an effective adult application and the child experience has no coherent character-led product identity. |
 | Generation core | **Scaffolded.** Structured generation exists, but deterministic validation does not enforce the full curriculum, media, weekly-plan, answer, duration, or instructional-sequence rules. |
-| Parent command center | **Incomplete and rejected.** Core review, publication, scheduling, replacement, preview, progress, settings, and history workflows are missing or misleading. |
-| Child lesson player | **Incomplete and rejected.** The renderer is text-dependent, has no real picture activities or characters, and contains evidence, fallback, resume, and completion defects. |
+| Parent command center | **Incomplete and rejected.** Recovery 1 adds transitional audited publication, scheduling, replay, replacement, withdrawal, revocation, and archival controls, but the adult information architecture, complete preview, progress, settings, and history workflows remain missing or rejected. |
+| Child lesson player | **Authoritative runtime implemented; product experience rejected.** Assignment-bound delivery, resume snapshots, ordered commands, evidence derivation, and completion gates now exist in the repository. The v1 renderer remains text-dependent, has no real picture activities or characters, and has not passed child usability. |
 | Audio and speech | **Scaffolded and blocked.** Server adapters exist, but no approved voice or active ElevenLabs configuration is present, no child audio flow is verified, and several fallbacks are nonfunctional. |
 | Mastery, review, stories, and progress | **Not implemented.** Tables and types do not constitute the adaptive loop. |
 | Pilot readiness | **Not started.** No complete five-lesson pilot has passed functional, instructional, responsive, accessibility, privacy, or child-usability acceptance. |
@@ -99,6 +99,8 @@ Product redesign, schema-v2 implementation, provider activation, and mastery log
 
 ## Recovery 1 - Authoritative domain, publication, and evidence model
 
+**Implementation status (2026-07-12): `implemented`.** The repository now contains the Recovery 1 migration, typed domain/runtime contracts, audited parent publication controls, assignment-bound child queries, server-authoritative attempt commands, legacy quarantine, and isolated fixture equivalents. This is not `verified` or `pilot-ready`: hosted migration application, formal tests, screenshots, live speech, child usability, and end-to-end acceptance have not been established.
+
 **Objective:** Correct the lifecycle and data model before rebuilding interfaces on top of it.
 
 ### Scope
@@ -129,6 +131,14 @@ The parent approves content without accidentally publishing it, can publish exac
 ### Excluded
 
 Final parent/child visual redesign, new character assets, live ElevenLabs activation, and mastery transitions.
+
+### Implementation record (2026-07-12)
+
+- Added committed migration `20260712120000_recovery_1_authoritative_domain.sql` with five-slot learning weeks, exact lesson/day binding, assignment/publication states, attempt modes, block/response/event state, authority provenance, narrow RLS/RPC mutations, and fail-closed legacy quarantine.
+- Replaced approval-as-delivery with private approval plus explicit schedule, publish, replay, replace, withdraw, revoke, and archive decisions. One active assignment per child/day slot and one published mission per child are database invariants.
+- Routed child home, start/resume, progress, semantic responses, and completion through assignment-bound RPCs with idempotent client events and optimistic state versions. Correctness, first attempt, support, retries, order, and completion are derived by the server.
+- Added typed repositories, runtime payload parsing, transitional parent publication controls, and local fixture equivalents. Existing generation, curriculum decisions, and live speech remain locked.
+- Documented the exact contract and limits in `docs/RECOVERY_1_DOMAIN.md`. The committed migration is not claimed as applied to hosted Supabase, and no formal verification evidence was collected.
 
 ## Recovery 2 - Instructional design, character world, and art direction
 

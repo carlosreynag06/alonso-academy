@@ -9,7 +9,7 @@ import { createClient } from "@/lib/supabase/server";
 export async function approveCurriculumUnit(formData: FormData) {
   const access = await getParentAccessState();
   if (access.status !== "ready") redirect("/login");
-  if (ACTIVE_RECOVERY.productMutationsLocked) redirect("/parent/recovery?blocked=curriculum_decision");
+  if (ACTIVE_RECOVERY.curriculumDecisionsLocked) redirect("/parent/recovery?blocked=curriculum_decision");
 
   const unitId = formData.get("unitId")?.toString();
   const reason = formData.get("reason")?.toString().trim();

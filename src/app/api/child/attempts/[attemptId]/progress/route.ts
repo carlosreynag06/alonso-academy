@@ -1,11 +1,16 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 import { getChildAccessState } from "@/lib/auth/child";
-import { ACTIVE_RECOVERY } from "@/lib/recovery/status";
-import { FixtureCommandError, saveFixtureLessonProgress } from "@/lib/development-fixtures/commands";
+import { applyFixtureProgressCommand, FixtureCommandError } from "@/lib/development-fixtures/commands";
+import { attemptMutationResponseSchema, attemptProgressCommandSchema } from "@/lib/lesson/runtime-contracts";
 import { createClient } from "@/lib/supabase/server";
 
-const schema = z.object({ blockIndex: z.number().int().nonnegative(), status: z.enum(["in_progress", "paused"]), breakCount: z.number().int().nonnegative(), playerState: z.record(z.string(), z.json()) });
+const schema = z.object({
+  clientEventId: z.string().uuid(),
+  expectedStateVersion: z.number().int().nonnegative(),
+  blockId: z.string().min(1),
+  command: attemptProgressCommandSchema,
+}).strict();
 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ attemptId: string }> }) {
   const access = await getChildAccessState();
@@ -15,21 +20,27 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   const { attemptId } = await params;
   if (access.fixture) {
     try {
-      await saveFixtureLessonProgress(attemptId, parsed.data);
-      return NextResponse.json({ ok: true, fixture: true });
+      return NextResponse.json(await applyFixtureProgressCommand(attemptId, parsed.data));
     } catch (error) {
-      return NextResponse.json({ error: error instanceof FixtureCommandError ? error.code : "fixture_progress_not_saved" }, { status: error instanceof FixtureCommandError ? error.status : 500 });
+      return NextResponse.json(
+        { error: error instanceof FixtureCommandError ? error.code : "fixture_progress_not_saved" },
+        { status: error instanceof FixtureCommandError ? error.status : 500 },
+      );
     }
   }
-  if (ACTIVE_RECOVERY.productMutationsLocked) return NextResponse.json({ error: "recovery_lock" }, { status: 423 });
   const supabase = await createClient();
-  const result = await supabase.rpc("save_child_lesson_progress", {
+  const result = await supabase.rpc("command_child_attempt", {
     p_attempt_id: attemptId,
-    p_block_index: parsed.data.blockIndex,
-    p_status: parsed.data.status,
-    p_break_count: parsed.data.breakCount,
-    p_player_state: parsed.data.playerState,
+    p_client_event_id: parsed.data.clientEventId,
+    p_expected_state_version: parsed.data.expectedStateVersion,
+    p_block_id: parsed.data.blockId,
+    p_command: parsed.data.command,
+    p_payload: {},
   });
-  if (result.error) return NextResponse.json({ error: "progress_not_saved" }, { status: 403 });
-  return NextResponse.json({ ok: true });
+  const response = attemptMutationResponseSchema.safeParse(result.data);
+  if (result.error || !response.success) {
+    const stale = result.error?.message.toLowerCase().includes("stale");
+    return NextResponse.json({ error: stale ? "stale_attempt_state" : "progress_not_saved" }, { status: stale ? 409 : 403 });
+  }
+  return NextResponse.json(response.data);
 }

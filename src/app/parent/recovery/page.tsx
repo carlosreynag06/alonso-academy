@@ -17,22 +17,22 @@ export default async function RecoveryPage() {
   const approvedWeeks = baseline.artifactCounts["weekly_plan:approved"] ?? 0;
   const approvedLessons = (baseline.artifactCounts["daily_lesson:approved"] ?? 0) + (baseline.artifactCounts["review_lesson:approved"] ?? 0);
   const blockers = [
-    "Approval and publication are not separated in the current domain model.",
-    "The parent and child production interfaces are rejected and awaiting coherent redesign.",
+    "The parent and child production interfaces still require the coherent Recovery 2 redesign.",
     "Lesson schema v1 cannot express character-led, picture-based, oral-first instruction.",
     !baseline.providers.audioReady ? "ElevenLabs and an approved American-English voice are not configured." : null,
     "Mastery, review scheduling, progress, and evidence-grounded summaries are not implemented.",
   ].filter((blocker): blocker is string => Boolean(blocker));
 
   return <ParentShell identity={access.email}><main className={styles.page} id="main-content">
-    <header className={styles.header}><div><p>Authoritative recovery baseline</p><h1>{ACTIVE_RECOVERY.phase}</h1><span>{ACTIVE_RECOVERY.title}</span></div><div className={styles.locked}><LockIcon size={18} /><strong>Product mutations paused</strong><small>Real approvals and lesson records are protected during the truth reset.</small></div></header>
+    <header className={styles.header}><div><p>Authoritative recovery baseline</p><h1>{ACTIVE_RECOVERY.phase}</h1><span>{ACTIVE_RECOVERY.title}</span></div><div className={styles.locked}><LockIcon size={18} /><strong>Authority boundaries enforced</strong><small>Approval remains private; publication and evidence now use explicit server-authoritative transitions.</small></div></header>
 
-    <section className={styles.next}><div><ShieldIcon size={22} /></div><div><p>Exact next blocker</p><h2>{ACTIVE_RECOVERY.nextBlocker}</h2><span>Recovery 1 must establish assignment, publication, replacement, withdrawal, and server-authoritative evidence before interface rebuilding continues.</span></div></section>
+    <section className={styles.next}><div><ShieldIcon size={22} /></div><div><p>Exact next blocker</p><h2>{ACTIVE_RECOVERY.nextBlocker}</h2><span>Recovery 1 now provides the authoritative five-slot week, explicit publication boundary, resumable attempts, and server-derived evidence required before interface rebuilding.</span></div></section>
 
     <section className={styles.section} aria-labelledby="real-state-title"><header><div><p>{access.fixture ? "Development fixture" : "Hosted project"}</p><h2 id="real-state-title">{access.fixture ? "Synthetic local state" : "Real data and provider state"}</h2></div><span className={styles.realBadge}>{access.fixture ? "No hosted reads or writes" : "No fixture values"}</span></header><div className={styles.metrics}>
       <article><small>Curriculum</small><strong>{baseline.curriculum?.status ?? "missing"}</strong><span>{baseline.curriculum?.code ?? "A-U1 unavailable"}</span></article>
       <article><small>Approved weeks</small><strong>{approvedWeeks}</strong><span>Artifact approval only</span></article>
       <article><small>Approved lessons</small><strong>{approvedLessons}</strong><span>Not a publication count</span></article>
+      <article><small>Day slots / published</small><strong>{baseline.slotCount} / {baseline.assignmentCounts.published ?? 0}</strong><span>Authoritative delivery state</span></article>
       <article><small>Attempts / evidence</small><strong>{baseline.attempts.length} / {baseline.evidenceCount}</strong><span>Learning history</span></article>
       <article><small>Mastery / reviews</small><strong>{baseline.masteryCount} / {baseline.reviewCount}</strong><span>Adaptive loop</span></article>
       <article><small>Audio ready</small><strong>{baseline.providers.audioReady ? "Yes" : "No"}</strong><span>{baseline.providers.approvedVoice ? "Voice selected" : "Voice approval missing"}</span></article>

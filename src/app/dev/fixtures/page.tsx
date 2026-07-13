@@ -27,9 +27,9 @@ export default async function DevelopmentFixturesPage({
     <main className={styles.page}>
       <header className={styles.header}>
         <div>
-          <p className={styles.eyebrow}>Recovery 0 · local development only</p>
+          <p className={styles.eyebrow}>Recovery 1 · local development only</p>
           <h1>Isolated fixture control</h1>
-          <p className={styles.intro}>These scenarios use synthetic, file-backed state. They do not authenticate with family passwords and must never call Supabase, OpenAI, or ElevenLabs.</p>
+          <p className={styles.intro}>These scenarios use synthetic, file-backed slots, approved-private lessons, assignments, attempts, and evidence. A synthetic “published” assignment never implies hosted publication and the fixture never calls Supabase, OpenAI, or ElevenLabs.</p>
         </div>
         <span className={styles.localBadge}>LOOPBACK · FIXTURE DATA</span>
       </header>
@@ -47,6 +47,8 @@ export default async function DevelopmentFixturesPage({
           <dl>
             <div><dt>Role</dt><dd>{session.role}</dd></div>
             <div><dt>Lessons</dt><dd>{session.catalog.lessons.length}</dd></div>
+            <div><dt>Day slots</dt><dd>{session.catalog.slots.length}</dd></div>
+            <div><dt>Assignments</dt><dd>{session.catalog.assignments.length}</dd></div>
             <div><dt>Evidence</dt><dd>{session.catalog.evidence.length}</dd></div>
             <div><dt>Source</dt><dd>local JSON</dd></div>
           </dl>

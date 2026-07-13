@@ -4,17 +4,17 @@ Alonso Academy is intended to become a private, curriculum-controlled American E
 
 ## Current status
 
-The project has implemented **Recovery 0: truth reset, fixtures, and acceptance contract**. Earlier Phase 2-7 documents record useful implementation history, but their phase-completion language is superseded: compilation and the presence of routes, migrations, or adapters do not prove that the corresponding product outcome works. Recovery 0 is not `verified` or `pilot-ready` because formal tests, screenshots, usability observation, and end-to-end pilot acceptance were not authorized or performed.
+The project has implemented **Recovery 1: authoritative domain, publication, and evidence model** in the repository. Recovery 0’s truth reset, fixtures, and acceptance contract remain authoritative foundations. Neither recovery is `verified` or `pilot-ready`: the committed Recovery 1 migration is not claimed as applied to hosted Supabase, and formal tests, screenshots, child-usability observation, live-provider verification, and end-to-end pilot acceptance have not been established.
 
-What exists today includes a shared password entrance, parent curriculum/generation/review routes, an approved-artifact lesson renderer, evidence RPCs, and dormant ElevenLabs adapters. These pieces have not passed an authorized end-to-end pilot. The controlled-learning loop still lacks verified publication sequencing, reliable child evidence/resume behavior, mastery and review transitions, parent progress, and an evidence-bound summary.
+What exists today includes direct password authentication for the two configured identities, parent curriculum/generation/review routes, a transitional five-day publication board, private artifact approval, audited assignment/publication/replacement/withdrawal controls, one-assignment child delivery, assignment-bound attempts, and server-derived v1 evidence/progression. These pieces have not passed an authorized end-to-end pilot. The controlled-learning loop still lacks the approved character-led instructional design, final parent and child applications, lesson schema v2 and asset validation, verified production audio/speech, mastery/review transitions, parent progress/history, and an evidence-bound summary.
 
 Live ElevenLabs audio is not active until a provider key and an explicitly parent-approved American English voice are configured. The presence of the adapter must not be described as a working speech experience.
 
-### Recovery 0 mutation lock
+### Recovery 1 fail-closed boundary
 
-Until the recovery audit explicitly releases this lock, do not mutate hosted curriculum, approvals, generated artifacts, child evidence, mastery/review records, provider administration, or voice/retention settings. Product and UX exploration may use **local-only fixtures** that are visibly labeled as fixtures, remain outside hosted Supabase, contain no real child evidence, and can never be returned by child-facing production queries.
+Generation, curriculum decisions, and live speech remain locked. The only enabled product transitions are the narrow audited Recovery 1 publication and assignment/attempt contracts. Approval remains private; only an explicit published assignment can be returned to the child. Broad authenticated table writes and the legacy browser-authoritative evidence/progress functions are superseded by the committed Recovery 1 migration.
 
-The fixture controller is available only in local development when `ALONSO_ENABLE_DEV_FIXTURES=true`, at `http://localhost:3000/dev/fixtures`. Fixture sessions use an ignored local JSON file and cannot instantiate the Supabase, OpenAI, or ElevenLabs clients.
+Product and UX exploration may use **local-only fixtures** that are visibly labeled, remain outside hosted Supabase, contain no real child evidence, and can never satisfy final acceptance. The fixture controller is available only in local development when `ALONSO_ENABLE_DEV_FIXTURES=true`, at `http://localhost:3000/dev/fixtures`. Fixture sessions use ignored local JSON and cannot instantiate Supabase, OpenAI, or ElevenLabs clients. Hosted parent publication mutations are unavailable in fixture sessions.
 
 Tests and screenshot capture still require explicit permission. A successful build is a compilation check only.
 
@@ -41,6 +41,4 @@ The environment template contains names only. Never commit `.env.local` or any p
 - `npm run db:status` — compare local and remote migration history
 - `npm run db:push` — apply pending migrations to the linked project
 
-Tests and screenshots must not be executed without explicit user permission. See [PHASE_PLAN.md](./PHASE_PLAN.md) for the historical implementation protocol and [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) for the current architecture and recovery boundaries.
-
-The Phase 2-7 documents preserve historical design and implementation details. Their prominent recovery notices are authoritative wherever older outcome language implies verification.
+Tests and screenshots must not be executed without explicit user permission. See [PHASE_PLAN.md](./PHASE_PLAN.md) for the recovery sequence, [Recovery 0 baseline](./docs/RECOVERY_0_BASELINE.md) for capability language and fixture isolation, [Recovery 1 domain](./docs/RECOVERY_1_DOMAIN.md) for the exact implemented schema/RPC/runtime contract, [route and state matrix](./docs/ROUTE_STATE_MATRIX.md) for current route behavior, and [pilot acceptance contract](./docs/PILOT_ACCEPTANCE_CONTRACT.md) for the proof required before private use is called pilot-ready.

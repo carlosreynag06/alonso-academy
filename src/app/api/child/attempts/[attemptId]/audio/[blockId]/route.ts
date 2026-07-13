@@ -5,8 +5,9 @@ import { AudioProviderError } from "@/lib/audio/provider";
 import { getChildLessonAttempt } from "@/lib/lesson/repository";
 import { ACTIVE_RECOVERY } from "@/lib/recovery/status";
 import { FixtureCommandError, getFixtureAudioOutcome } from "@/lib/development-fixtures/commands";
+import type { ChildSafeLessonBlock } from "@/lib/lesson/runtime-contracts";
 
-function spokenText(block: Awaited<ReturnType<typeof getChildLessonAttempt>>["lesson"]["content"]["blocks"][number]) {
+function spokenText(block: ChildSafeLessonBlock) {
   if (block.type === "model_audio" || block.type === "letter_work") return block.modelText;
   if (block.type === "listen_select" || block.type === "picture_action_select" || block.type === "phonemic_awareness" || block.type === "exit_check") return block.promptText;
   return null;
@@ -29,7 +30,7 @@ export async function GET(_: Request, { params }: { params: Promise<{ attemptId:
   }
   if (ACTIVE_RECOVERY.childDeliveryLocked) return NextResponse.json({ error: "recovery_lock" }, { status: 423 });
   const data = await getChildLessonAttempt(attemptId).catch(() => null);
-  const block = data?.lesson.content.blocks.find((candidate) => candidate.id === blockId);
+  const block = data?.lesson.blocks.find((candidate) => candidate.id === blockId);
   const text = block ? spokenText(block) : null;
   if (!text) return NextResponse.json({ error: "audio_not_available" }, { status: 404 });
 

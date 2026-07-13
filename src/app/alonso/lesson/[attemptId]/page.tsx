@@ -12,7 +12,11 @@ export default async function LessonPage({ params }: { params: Promise<{ attempt
   if (access.status !== "ready") redirect("/login");
   if (ACTIVE_RECOVERY.childDeliveryLocked && !access.fixture) redirect("/alonso?error=recovery_lock");
   const { attemptId } = await params;
-  const data = await getChildLessonAttempt(attemptId).catch(() => notFound());
-  if (data.attempt.status === "completed") redirect("/alonso");
-  return <LessonPlayer attemptId={data.attempt.id} lesson={data.lesson.content} initialIndex={data.attempt.currentBlockIndex} initialBreakCount={data.attempt.breakCount} fixture={access.fixture} />;
+  const payload = await getChildLessonAttempt(attemptId).catch(() => notFound());
+  return <LessonPlayer
+    attemptId={payload.snapshot.attemptId}
+    lesson={payload.lesson}
+    initialSnapshot={payload.snapshot}
+    fixture={access.fixture}
+  />;
 }

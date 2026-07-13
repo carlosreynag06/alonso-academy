@@ -1,24 +1,45 @@
-import { NextResponse } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
+import { z } from "zod";
 import { getChildAccessState } from "@/lib/auth/child";
-import { ACTIVE_RECOVERY } from "@/lib/recovery/status";
-import { completeFixtureLesson, FixtureCommandError } from "@/lib/development-fixtures/commands";
+import { applyFixtureCompleteCommand, FixtureCommandError } from "@/lib/development-fixtures/commands";
+import { attemptMutationResponseSchema } from "@/lib/lesson/runtime-contracts";
 import { createClient } from "@/lib/supabase/server";
 
-export async function POST(_: Request, { params }: { params: Promise<{ attemptId: string }> }) {
+const schema = z.object({
+  clientEventId: z.string().uuid(),
+  expectedStateVersion: z.number().int().nonnegative(),
+  blockId: z.string().min(1),
+}).strict();
+
+export async function POST(request: NextRequest, { params }: { params: Promise<{ attemptId: string }> }) {
   const access = await getChildAccessState();
   if (access.status !== "ready") return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  const parsed = schema.safeParse(await request.json().catch(() => null));
+  if (!parsed.success) return NextResponse.json({ error: "invalid_completion" }, { status: 400 });
   const { attemptId } = await params;
   if (access.fixture) {
     try {
-      await completeFixtureLesson(attemptId);
-      return NextResponse.json({ ok: true, fixture: true });
+      return NextResponse.json(await applyFixtureCompleteCommand(attemptId, parsed.data));
     } catch (error) {
-      return NextResponse.json({ error: error instanceof FixtureCommandError ? error.code : "fixture_lesson_not_completed" }, { status: error instanceof FixtureCommandError ? error.status : 500 });
+      return NextResponse.json(
+        { error: error instanceof FixtureCommandError ? error.code : "fixture_lesson_not_completed" },
+        { status: error instanceof FixtureCommandError ? error.status : 500 },
+      );
     }
   }
-  if (ACTIVE_RECOVERY.productMutationsLocked) return NextResponse.json({ error: "recovery_lock" }, { status: 423 });
   const supabase = await createClient();
-  const result = await supabase.rpc("complete_child_lesson", { p_attempt_id: attemptId });
-  if (result.error) return NextResponse.json({ error: "lesson_not_completed" }, { status: 403 });
-  return NextResponse.json({ ok: true });
+  const result = await supabase.rpc("command_child_attempt", {
+    p_attempt_id: attemptId,
+    p_client_event_id: parsed.data.clientEventId,
+    p_expected_state_version: parsed.data.expectedStateVersion,
+    p_block_id: parsed.data.blockId,
+    p_command: "complete",
+    p_payload: {},
+  });
+  const response = attemptMutationResponseSchema.safeParse(result.data);
+  if (result.error || !response.success) {
+    const stale = result.error?.message.toLowerCase().includes("stale");
+    return NextResponse.json({ error: stale ? "stale_attempt_state" : "lesson_not_completed" }, { status: stale ? 409 : 403 });
+  }
+  return NextResponse.json(response.data);
 }

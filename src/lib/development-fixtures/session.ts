@@ -41,8 +41,13 @@ export async function getDevelopmentFixtureSessionId() {
 export async function getDevelopmentFixtureSession() {
   const sessionId = await getDevelopmentFixtureSessionId();
   if (!sessionId) return null;
-  const state = await readDevelopmentFixtureState(sessionId);
-  return state ? developmentFixtureStateSchema.parse(state) : null;
+  try {
+    const state = await readDevelopmentFixtureState(sessionId);
+    return state ? developmentFixtureStateSchema.parse(state) : null;
+  } catch (error) {
+    if (error instanceof z.ZodError) return null;
+    throw error;
+  }
 }
 
 export async function enterDevelopmentFixtureScenario(scenario: FixtureScenarioKey) {
