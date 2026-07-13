@@ -1,15 +1,27 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 import { getChildAccessState } from "@/lib/auth/child";
+import { ACTIVE_RECOVERY } from "@/lib/recovery/status";
+import { FixtureCommandError, saveFixtureLessonProgress } from "@/lib/development-fixtures/commands";
 import { createClient } from "@/lib/supabase/server";
 
 const schema = z.object({ blockIndex: z.number().int().nonnegative(), status: z.enum(["in_progress", "paused"]), breakCount: z.number().int().nonnegative(), playerState: z.record(z.string(), z.json()) });
 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ attemptId: string }> }) {
-  if ((await getChildAccessState()).status !== "ready") return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  const access = await getChildAccessState();
+  if (access.status !== "ready") return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   const parsed = schema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: "invalid_progress" }, { status: 400 });
   const { attemptId } = await params;
+  if (access.fixture) {
+    try {
+      await saveFixtureLessonProgress(attemptId, parsed.data);
+      return NextResponse.json({ ok: true, fixture: true });
+    } catch (error) {
+      return NextResponse.json({ error: error instanceof FixtureCommandError ? error.code : "fixture_progress_not_saved" }, { status: error instanceof FixtureCommandError ? error.status : 500 });
+    }
+  }
+  if (ACTIVE_RECOVERY.productMutationsLocked) return NextResponse.json({ error: "recovery_lock" }, { status: 423 });
   const supabase = await createClient();
   const result = await supabase.rpc("save_child_lesson_progress", {
     p_attempt_id: attemptId,

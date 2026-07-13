@@ -1,5 +1,7 @@
 # Phase 6: Child Lesson Player and Learning Evidence
 
+> **Historical scaffold — superseded by Recovery 0:** This document describes a lesson renderer and evidence boundary, not a verified independent learning application. Reachability, publication sequencing, resume fidelity, evidence correctness, accessibility, and six-year-old usability remain unverified. Hosted lesson/evidence data is mutation-locked; recovery fixtures must be local-only, visibly labeled, contain no real child evidence, and be impossible for production child queries to return.
+
 ## Outcome
 
 Phase 6 establishes Alonso's independent learning application without inventing or auto-approving content. Alonso Home discovers only parent-approved daily or review lessons. Because the pilot curriculum and first lesson still await parent approval, the current live outcome is an intentional preparation state; the complete player becomes reachable as soon as a supported lesson is approved.

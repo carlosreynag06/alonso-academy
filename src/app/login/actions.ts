@@ -3,6 +3,8 @@
 import { redirect } from "next/navigation";
 import { getChildLoginEmail, getParentAllowlistEmail } from "@/lib/env/server";
 import { createClient } from "@/lib/supabase/server";
+import { getDevelopmentFixtureSource } from "@/lib/development-fixtures/source";
+import { exitDevelopmentFixtureSession } from "@/lib/development-fixtures/session";
 
 function resolveIdentifier(identifier: string, parentEmail: string, childEmail: string) {
   const normalized = identifier.trim().toLowerCase();
@@ -41,6 +43,10 @@ export async function signInWithPassword(formData: FormData) {
 }
 
 export async function signOut() {
+  if (await getDevelopmentFixtureSource()) {
+    await exitDevelopmentFixtureSession();
+    redirect("/dev/fixtures?exited=1");
+  }
   const supabase = await createClient();
   await supabase.auth.signOut();
   redirect("/login");

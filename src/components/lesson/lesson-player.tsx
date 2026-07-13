@@ -6,6 +6,7 @@ import { BookIcon, CheckIcon, SparkIcon } from "@/components/icons";
 import type { DailyLessonDraft, LessonBlock } from "@/lib/generation/contracts";
 import { AudioLessonButton } from "./audio-lesson-button";
 import { SpeechControl } from "./speech-control";
+import { FixtureBanner } from "@/components/development/fixture-banner";
 import styles from "./lesson-player.module.css";
 
 type Mode = "activity" | "feedback" | "break" | "complete" | "error";
@@ -27,7 +28,7 @@ function evidenceType(block: LessonBlock) {
   return "recognition";
 }
 
-export function LessonPlayer({ attemptId, lesson, initialIndex, initialBreakCount }: { attemptId: string; lesson: DailyLessonDraft; initialIndex: number; initialBreakCount: number }) {
+export function LessonPlayer({ attemptId, lesson, initialIndex, initialBreakCount, fixture = false }: { attemptId: string; lesson: DailyLessonDraft; initialIndex: number; initialBreakCount: number; fixture?: boolean }) {
   const router = useRouter();
   const [index, setIndex] = useState(Math.min(initialIndex, lesson.blocks.length - 1));
   const [breakCount, setBreakCount] = useState(initialBreakCount);
@@ -44,6 +45,7 @@ export function LessonPlayer({ attemptId, lesson, initialIndex, initialBreakCoun
   const reducedOptions = support === "reduced_choices" && options.length > 2
     ? [options.find((option) => option.correct)!, options.find((option) => !option.correct)!]
     : options;
+  const fixtureBanner = fixture ? <FixtureBanner /> : null;
 
   async function post(path: string, body?: unknown) {
     const response = await fetch(`/api/child/attempts/${attemptId}/${path}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: body ? JSON.stringify(body) : undefined });
@@ -93,11 +95,11 @@ export function LessonPlayer({ attemptId, lesson, initialIndex, initialBreakCoun
   async function takeBreak() { const next = breakCount + 1; try { await saveProgress(index, "paused", next); setBreakCount(next); setMode("break"); } catch { setMode("error"); } }
   async function endBreak() { try { await saveProgress(index, "in_progress"); setMode("activity"); startedAt.current = Date.now(); } catch { setMode("error"); } }
 
-  if (mode === "complete") return <main className={styles.complete} id="main-content"><div className={styles.completeSky}><span><SparkIcon size={32} /></span><i /><i /><i /></div><p>You finished today’s lesson</p><h1>Beautiful work,<br />Alonso.</h1><p className={styles.completeCopy}>You listened, tried, and kept going one step at a time.</p><button onClick={() => { router.push("/alonso"); router.refresh(); }}>Back to my home <span>→</span></button></main>;
-  if (mode === "error") return <main className={styles.errorState} id="main-content"><span><BookIcon size={28} /></span><h1>Let’s pause here.</h1><p>Your place is safe. Go home and open the lesson again.</p><button onClick={() => router.push("/alonso")}>Back to my home</button></main>;
-  if (mode === "break") return <main className={styles.breakScreen} id="main-content"><div className={styles.breathe} aria-hidden="true"><span /></div><p>Little break</p><h1>Stretch up high.<br />Take one slow breath.</h1><button onClick={endBreak}>I’m ready <span>→</span></button></main>;
+  if (mode === "complete") return <>{fixtureBanner}<main className={styles.complete} id="main-content"><div className={styles.completeSky}><span><SparkIcon size={32} /></span><i /><i /><i /></div><p>You finished today’s lesson</p><h1>Beautiful work,<br />Alonso.</h1><p className={styles.completeCopy}>You listened, tried, and kept going one step at a time.</p><button onClick={() => { router.push("/alonso"); router.refresh(); }}>Back to my home <span>→</span></button></main></>;
+  if (mode === "error") return <>{fixtureBanner}<main className={styles.errorState} id="main-content"><span><BookIcon size={28} /></span><h1>Let’s pause here.</h1><p>Your place is safe. Go home and open the lesson again.</p><button onClick={() => router.push("/alonso")}>Back to my home</button></main></>;
+  if (mode === "break") return <>{fixtureBanner}<main className={styles.breakScreen} id="main-content"><div className={styles.breathe} aria-hidden="true"><span /></div><p>Little break</p><h1>Stretch up high.<br />Take one slow breath.</h1><button onClick={endBreak}>I’m ready <span>→</span></button></main></>;
 
-  return <main className={styles.player} id="main-content">
+  return <>{fixtureBanner}<main className={styles.player} id="main-content">
     <header className={styles.playerHeader}><button onClick={pauseLesson}>Pause</button><div className={styles.progress}><div><span style={{ width: `${progress}%` }} /></div><p>Step {index + 1} of {lesson.blocks.length}</p></div><button onClick={takeBreak}>Take a break</button></header>
     <section className={`${styles.stage} ${styles[`stage_${block.type}`]}`} aria-labelledby="activity-title">
       <div className={styles.stageDecoration} aria-hidden="true"><i /><i /><i /></div>
@@ -120,5 +122,5 @@ export function LessonPlayer({ attemptId, lesson, initialIndex, initialBreakCoun
       {mode === "activity" && block.type === "model_audio" && <div className={styles.bottomActions}><button onClick={advance}>Next <span>→</span></button></div>}
       {mode === "activity" && block.type === "movement_break" && <div className={styles.bottomActions}><button onClick={advance}>I did it <span>→</span></button></div>}
     </section>
-  </main>;
+  </main></>;
 }

@@ -1,5 +1,15 @@
 # Foundation Architecture
 
+> **Recovery 0 architecture status (authoritative):** This document inventories intended boundaries and implemented scaffolding. It is not evidence that the product works end to end. No phase is product-verified from compilation, migration presence, route presence, or documentation alone. Historical phase claims below must be read with that limitation.
+
+## Recovery 0 operating boundary
+
+- Hosted curriculum, approvals, generated artifacts, child evidence, mastery/review data, provider administration, and voice/retention settings are under a mutation lock until the recovery audit explicitly releases them.
+- UX and workflow exploration may use local-only fixtures. Fixtures must be conspicuously identified, contain no real child evidence, remain outside hosted Supabase, and be impossible for child-facing production queries to return.
+- The present system is a scaffold: authentication and data boundaries exist, parent and child routes exist, and provider adapters exist, but the controlled-learning loop has not been verified.
+- A build demonstrates compilation only. Product behavior requires authorized tests, screenshots, data-state inspection, and end-to-end acceptance.
+- The Phase 2-7 sections below preserve implementation history; they do not override Recovery 0 findings or certify safety, pedagogy, usability, or completeness.
+
 ## Runtime
 
 - Next.js 16.2 App Router with React and strict TypeScript
@@ -7,7 +17,7 @@
 - Server Components by default; Client Components only where browser interaction requires them
 - CSS Modules for route/component styling and global CSS only for tokens and base rules
 
-## Planned boundaries
+## Intended boundaries
 
 - `src/app` owns routes and minimal view composition.
 - `src/lib` owns domain, data, validation, and provider boundaries.
@@ -17,6 +27,8 @@
 - Generated instructional content is never exposed to a child unless its immutable version is validated and parent-approved.
 
 ## Phase 2 data and identity boundaries
+
+The following mechanisms were scaffolded. Their hosted configuration and end-to-end behavior require recovery verification.
 
 - Supabase SSR clients are created per request and use the publishable key plus user cookies.
 - `src/proxy.ts` refreshes authentication cookies but does not replace database authorization.
@@ -35,6 +47,8 @@ Content Security Policy is intentionally deferred until provider transports and 
 
 ## Phase 3 experience architecture
 
+The component and token structure below exists, but its claimed polish, responsiveness, accessibility, and age-appropriate usability have not been accepted.
+
 - Global CSS owns semantic tokens, base accessibility rules, focus treatment, and reduced-motion behavior.
 - CSS Modules own route and component styling; no route imports privileged data into a Client Component.
 - `src/components/ui` provides reusable action, status, feedback, progress, selection, audio, microphone, and story primitives.
@@ -44,6 +58,8 @@ Content Security Policy is intentionally deferred until provider transports and 
 
 ## Phase 4 generation boundary
 
+The generation modules and contracts below exist. Their deterministic coverage, provider behavior, retry semantics, and curriculum compliance are not sufficient to claim a verified generation pipeline.
+
 - `src/lib/generation/contracts.ts` is the versioned registry for plans, lessons, blocks, stories, summaries, validation reports, evidence, mastery, review, approvals, and provider results.
 - `src/lib/generation/snapshot.ts` reads only approved curriculum targets and hashes the immutable boundary supplied to a request.
 - `src/lib/generation/provider.ts` is server-only, fixes instructional work to `gpt-5.5` with high reasoning, disables API-side response storage, and has no fallback path.
@@ -52,6 +68,8 @@ Content Security Policy is intentionally deferred until provider transports and 
 - `validated` is still private. Explicit parent approval produces a distinct audited state, and child delivery remains absent until Phase 6.
 
 ## Phase 5 parent-control boundary
+
+The routes and RPCs below represent the intended workflow. They have not demonstrated a complete, understandable parent approval and publication experience.
 
 - Parent actions call `getParentAccessState` before every generation, approval, rejection, or regeneration mutation; RLS and security-definer RPC checks independently enforce the same boundary.
 - The command center progresses from curriculum approval, to weekly-plan generation, to weekly approval, to individual lesson generation. Missing prerequisites remain visible and fail closed.
@@ -71,6 +89,8 @@ Content Security Policy is intentionally deferred until provider transports and 
 
 ## Phase 6 child lesson boundary
 
+The lesson renderer and evidence RPCs below are scaffolded. Resume fidelity, server-authoritative evidence, publication sequencing, and six-year-old usability remain recovery work.
+
 - Alonso Home calls a security-definer RPC that resolves the authenticated singleton child and returns only approved daily/review lessons plus that child's active attempt.
 - The server parses every returned lesson through the strict daily-lesson schema and a registered Phase 6 block allowlist. Unknown or later-phase blocks fail closed and never render.
 - Starting, resuming, saving, recording evidence, and completing are separate child-only RPCs. Each derives the child ID from `auth.uid()` rather than trusting a browser-supplied child ID.
@@ -81,6 +101,8 @@ Content Security Policy is intentionally deferred until provider transports and 
 - Phase 6 uses no microphone, raw audio, pronunciation scoring, mastery transitions, or child-facing free chat.
 
 ## Phase 7 audio and speech boundary
+
+The adapters and routes below are dormant until provider access and an approved voice are configured. They have not been verified as a live child speech experience.
 
 - Audio routes resolve text from the authenticated child's active approved artifact and block ID. The browser cannot submit arbitrary text for synthesis.
 - ElevenLabs credentials and the approved voice ID are read only in server-only provider modules. Missing provider configuration produces a safe text/choice fallback and never interrupts lesson state.

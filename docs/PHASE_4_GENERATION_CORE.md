@@ -1,5 +1,7 @@
 # Phase 4: Structured Generation and Validation Core
 
+> **Historical scaffold — superseded by Recovery 0:** This document records generation contracts and adapters that were added to the repository. Their presence or successful compilation does not prove curriculum compliance, retry safety, provider availability, or a usable generation workflow. Hosted curriculum, approvals, artifacts, evidence, mastery/review data, and provider administration remain mutation-locked; any fixtures must be local-only and unreachable by child-facing production queries.
+
 ## Outcome
 
 Phase 4 establishes the server pipeline for parent-requested drafts without exposing a generation action prematurely. The OpenAI project key is stored only in ignored local configuration. Instructional generation and semantic validation are pinned to `gpt-5.5` with high reasoning; `gpt-5.4-mini` is reserved for evidence-bound summaries. There is no fallback model.

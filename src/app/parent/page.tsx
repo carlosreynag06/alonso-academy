@@ -9,6 +9,7 @@ import { StatusBadge } from "@/components/ui/status-badge";
 import { getParentAccessState } from "@/lib/auth/parent";
 import { getProviderReadiness } from "@/lib/generation/readiness";
 import { getGenerationCommandCenter } from "@/lib/generation/repository";
+import { ACTIVE_RECOVERY } from "@/lib/recovery/status";
 import { signOut } from "../login/actions";
 import styles from "./parent.module.css";
 import overview from "./overview.module.css";
@@ -55,18 +56,20 @@ export default async function ParentPage() {
   const approvedWeek = commandCenter.artifacts.find((artifact) => artifact.kind === "weekly_plan" && artifact.status === "approved");
   const approvedLessons = commandCenter.artifacts.filter((artifact) => artifact.kind !== "weekly_plan" && artifact.status === "approved");
   const currentStep = commandCenter.unit.status !== "approved" ? 1 : !approvedWeek ? 2 : approvedLessons.length < 5 ? 3 : 4;
-  const nextAction = currentStep === 1
-    ? { eyebrow: "Curriculum decision", title: "Review the Unit 1 boundary", copy: "Confirm the vocabulary, sentence frames, sound anchors, and literacy limits before planning begins.", href: `/parent/curriculum/${commandCenter.unit.id}`, label: "Review curriculum" }
-    : currentStep === 2
-      ? { eyebrow: "Weekly planning", title: "Create Alonso’s first five-day plan", copy: "The curriculum is approved. Request a balanced week, inspect the rationale, and decide whether the plan is ready.", href: "/parent/generation", label: "Open planning studio" }
-      : { eyebrow: "Lesson production", title: `${approvedLessons.length} of 5 lessons approved`, copy: "Continue creating and reviewing one lesson at a time. Each version remains private until your decision.", href: "/parent/generation", label: "Continue lesson review" };
+  const nextAction = {
+    eyebrow: "Recovery baseline",
+    title: "Review the exact product blockers",
+    copy: "Generation, curriculum decisions, and child delivery are paused while the publication and evidence model is rebuilt. Existing hosted records remain unchanged.",
+    href: "/parent/recovery",
+    label: "Open recovery baseline",
+  };
   const kindLabels: Record<string, string> = { weekly_plan: "Weekly plan", daily_lesson: "Daily lesson", review_lesson: "Review lesson", story_lesson: "Listening story" };
 
   return (
     <ParentShell identity={access.email}>
       <main className={overview.page} id="main-content">
         <header className={overview.header}>
-          <div><p className={overview.kicker}>Parent workspace</p><h1>Good evening, {access.displayName}.</h1><p>Alonso’s current learning position, decisions, and next step.</p></div>
+          <div><p className={overview.kicker}>Parent workspace · {ACTIVE_RECOVERY.phase}</p><h1>Good evening, {access.displayName}.</h1><p>This view reports existing hosted records. It is not a pilot-readiness claim.</p></div>
           <div className={overview.headerTools}><span><i />Private</span><form action={signOut}><button>Sign out</button></form></div>
         </header>
 
@@ -76,7 +79,7 @@ export default async function ParentPage() {
         </section>
 
         <section className={overview.journey} aria-labelledby="path-title"><div className={overview.journeyTitle}><p className={overview.kicker}>Learning sequence</p><h2 id="path-title">Curriculum → Alonso</h2></div><ol className={overview.steps}>
-          {[{ n: 1, label: "Curriculum", detail: commandCenter.unit.status === "approved" ? "Approved" : "Needs review" }, { n: 2, label: "Weekly plan", detail: approvedWeek ? "Approved" : "Not started" }, { n: 3, label: "Lessons", detail: `${approvedLessons.length} of 5` }, { n: 4, label: "Ready", detail: approvedLessons.length >= 5 ? "Available" : "Locked" }].map((step) => <li className={step.n < currentStep ? overview.done : step.n === currentStep ? overview.now : overview.later} key={step.n}><span>{step.n < currentStep ? <CheckIcon size={14} /> : step.n}</span><div><strong>{step.label}</strong><small>{step.detail}</small></div></li>)}
+          {[{ n: 1, label: "Curriculum record", detail: commandCenter.unit.status }, { n: 2, label: "Week artifact", detail: approvedWeek ? "Approved record" : "Absent" }, { n: 3, label: "Lesson artifacts", detail: `${approvedLessons.length} approved record${approvedLessons.length === 1 ? "" : "s"}` }, { n: 4, label: "Pilot", detail: "Recovery blocked" }].map((step) => <li className={step.n < currentStep ? overview.done : step.n === currentStep ? overview.now : overview.later} key={step.n}><span>{step.n < currentStep ? <CheckIcon size={14} /> : step.n}</span><div><strong>{step.label}</strong><small>{step.detail}</small></div></li>)}
         </ol></section>
 
         <div className={overview.lower}>
@@ -85,7 +88,7 @@ export default async function ParentPage() {
           <aside className={overview.boundary} aria-labelledby="unit-brief-title"><header><span><BookIcon size={18} /></span><div><p className={overview.kicker}>Unit boundary</p><h2 id="unit-brief-title">A–U1</h2></div></header><dl><div><dt>Vocabulary</dt><dd>10</dd></div><div><dt>Frames</dt><dd>4</dd></div><div><dt>Sounds</dt><dd>2</dd></div><div><dt>Minutes</dt><dd>15</dd></div></dl><Link href={`/parent/curriculum/${commandCenter.unit.id}`}>Inspect curriculum →</Link><div className={overview.boundaryAccent} aria-hidden="true" /></aside>
         </div>
 
-        <footer className={overview.footer}><span><ShieldIcon size={16} />Parent-controlled publication</span><i /><span><LockIcon size={15} />Drafts never reach Alonso</span></footer>
+        <footer className={overview.footer}><span><ShieldIcon size={16} />Connected technical foundation</span><i /><span><LockIcon size={15} />Publication model not yet verified</span></footer>
       </main>
     </ParentShell>
   );

@@ -1,8 +1,12 @@
 import "server-only";
 
 import { createClient } from "@/lib/supabase/server";
+import { getDevelopmentFixtureSource } from "@/lib/development-fixtures/source";
+import { getFixtureCurriculumOverview, getFixtureCurriculumUnit } from "@/lib/development-fixtures/adapters";
 
 export async function getCurriculumOverview() {
+  const fixture = await getDevelopmentFixtureSource();
+  if (fixture) return getFixtureCurriculumOverview(fixture.state);
   const supabase = await createClient();
   const [phasesResult, unitsResult] = await Promise.all([
     supabase.from("curriculum_phases").select("*").order("sequence"),
@@ -15,6 +19,8 @@ export async function getCurriculumOverview() {
 }
 
 export async function getCurriculumUnit(unitId: string) {
+  const fixture = await getDevelopmentFixtureSource();
+  if (fixture) return getFixtureCurriculumUnit(fixture.state, unitId);
   const supabase = await createClient();
   const [unit, vocabulary, frames, phonics, writing] = await Promise.all([
     supabase.from("curriculum_units").select("*").eq("id", unitId).single(),

@@ -1,5 +1,7 @@
 # Phase 7: ElevenLabs Audio, Speech, and Pronunciation
 
+> **Historical scaffold — superseded by Recovery 0:** This document records dormant server-side audio and speech adapters, not a live or verified child speech experience. No provider activation, approved voice, retention change, or hosted evidence mutation is authorized during Recovery 0. Local-only fixtures must be visibly labeled, contain no real child audio/evidence, and remain unreachable from child-facing production queries.
+
 ## Outcome
 
 Phase 7 connects the child lesson player to a server-only audio boundary. Model text and activity prompts can be synthesized and replayed, while selected spoken activities can collect short responses with clear ready, recording, processing, denied, silence, retry, and success states. Provider failure never damages lesson progress and always leaves a visual or choice-based path forward.

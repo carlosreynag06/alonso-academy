@@ -69,6 +69,8 @@ Test execution, formal browser screenshots, usability observation, provider subs
 
 ## Recovery 0 - Truth reset, fixtures, and acceptance contract
 
+**Implementation status (2026-07-12): `implemented`.** The authorized baseline, mutation lock, isolated local fixture harness, route/state inventory, and pilot acceptance contract exist. This does not mean `verified` or `pilot-ready`; no formal tests, screenshots, usability observation, provider activation, or pilot acceptance were performed in Recovery 0.
+
 **Objective:** Establish an honest, safely testable baseline before rebuilding product behavior.
 
 ### Scope

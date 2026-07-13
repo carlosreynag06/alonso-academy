@@ -1,16 +1,22 @@
 # Alonso Academy
 
-Alonso Academy is a private, curriculum-controlled American English learning application for one child and one parent. The project is intentionally developed in separately approved phases.
+Alonso Academy is intended to become a private, curriculum-controlled American English learning application for one child and one parent. The repository currently contains an unverified product scaffold, not a pilot-ready learning application.
 
 ## Current status
 
-Phase 5 adds the parent command center and the complete planning approval workflow. The allowlisted parent can review the pilot curriculum, request a five-day plan, inspect validation, approve or reject immutable versions, regenerate with precise direction, and create individual daily, review, or listening-story lessons after approving a week. OpenAI remains server-only and nothing generated is child-readable yet.
+The project has implemented **Recovery 0: truth reset, fixtures, and acceptance contract**. Earlier Phase 2-7 documents record useful implementation history, but their phase-completion language is superseded: compilation and the presence of routes, migrations, or adapters do not prove that the corresponding product outcome works. Recovery 0 is not `verified` or `pilot-ready` because formal tests, screenshots, usability observation, and end-to-end pilot acceptance were not authorized or performed.
 
-The application entrance is available at `/` and `/login`. The two pre-provisioned Supabase accounts sign in directly with their passwords; the verified identity routes to either the parent workspace or Alonso's learning space. There is no public signup or magic-link flow.
+What exists today includes a shared password entrance, parent curriculum/generation/review routes, an approved-artifact lesson renderer, evidence RPCs, and dormant ElevenLabs adapters. These pieces have not passed an authorized end-to-end pilot. The controlled-learning loop still lacks verified publication sequencing, reliable child evidence/resume behavior, mastery and review transitions, parent progress, and an evidence-bound summary.
 
-Phase 6 adds Alonso Home and the child lesson player. Only approved daily/review lesson versions with registered activity blocks can appear. Attempts resume from the saved block, preserve first-attempt and scaffolded evidence separately, support breaks and reduced-choice remediation, and require exit evidence before completion. Until the parent approves the first lesson, Alonso sees a designed preparation state rather than invented content.
+Live ElevenLabs audio is not active until a provider key and an explicitly parent-approved American English voice are configured. The presence of the adapter must not be described as a working speech experience.
 
-Phase 7 adds server-only ElevenLabs audio and speech infrastructure, reusable local TTS caching, ephemeral microphone processing, silence-aware feedback, and derived evidence. Live audio stays gated until a parent-approved voice and provider key are configured.
+### Recovery 0 mutation lock
+
+Until the recovery audit explicitly releases this lock, do not mutate hosted curriculum, approvals, generated artifacts, child evidence, mastery/review records, provider administration, or voice/retention settings. Product and UX exploration may use **local-only fixtures** that are visibly labeled as fixtures, remain outside hosted Supabase, contain no real child evidence, and can never be returned by child-facing production queries.
+
+The fixture controller is available only in local development when `ALONSO_ENABLE_DEV_FIXTURES=true`, at `http://localhost:3000/dev/fixtures`. Fixture sessions use an ignored local JSON file and cannot instantiate the Supabase, OpenAI, or ElevenLabs clients.
+
+Tests and screenshot capture still require explicit permission. A successful build is a compilation check only.
 
 ## Local setup
 
@@ -35,8 +41,6 @@ The environment template contains names only. Never commit `.env.local` or any p
 - `npm run db:status` — compare local and remote migration history
 - `npm run db:push` — apply pending migrations to the linked project
 
-Tests and screenshots must not be executed without explicit user permission. See [PHASE_PLAN.md](./PHASE_PLAN.md) for the implementation protocol and [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) for foundation boundaries.
+Tests and screenshots must not be executed without explicit user permission. See [PHASE_PLAN.md](./PHASE_PLAN.md) for the historical implementation protocol and [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) for the current architecture and recovery boundaries.
 
-Supabase setup and parent provisioning are documented in [docs/PHASE_2_DATA_AND_AUTH.md](./docs/PHASE_2_DATA_AND_AUTH.md). Visual-system behavior is documented in [docs/PHASE_3_VISUAL_SYSTEM.md](./docs/PHASE_3_VISUAL_SYSTEM.md). The generation boundary is documented in [docs/PHASE_4_GENERATION_CORE.md](./docs/PHASE_4_GENERATION_CORE.md), and the parent workflow in [docs/PHASE_5_PARENT_COMMAND_CENTER.md](./docs/PHASE_5_PARENT_COMMAND_CENTER.md).
-The child player and evidence boundary are documented in [docs/PHASE_6_CHILD_LESSON_PLAYER.md](./docs/PHASE_6_CHILD_LESSON_PLAYER.md).
-Audio, speech, privacy, and provider activation are documented in [docs/PHASE_7_AUDIO_AND_SPEECH.md](./docs/PHASE_7_AUDIO_AND_SPEECH.md).
+The Phase 2-7 documents preserve historical design and implementation details. Their prominent recovery notices are authoritative wherever older outcome language implies verification.

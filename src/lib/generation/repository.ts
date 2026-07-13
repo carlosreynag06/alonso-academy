@@ -1,8 +1,12 @@
 import "server-only";
 
 import { createClient } from "@/lib/supabase/server";
+import { getDevelopmentFixtureSource } from "@/lib/development-fixtures/source";
+import { getFixtureArtifactReview, getFixtureGenerationCommandCenter, getFixtureLatestApprovedWeeklyPlan } from "@/lib/development-fixtures/adapters";
 
 export async function getGenerationCommandCenter() {
+  const fixture = await getDevelopmentFixtureSource();
+  if (fixture) return getFixtureGenerationCommandCenter(fixture.state);
   const supabase = await createClient();
   const [unitResult, artifactsResult, jobsResult] = await Promise.all([
     supabase.from("curriculum_units").select("*").eq("code", "A-U1").single(),
@@ -16,6 +20,8 @@ export async function getGenerationCommandCenter() {
 }
 
 export async function getArtifactReview(artifactId: string) {
+  const fixture = await getDevelopmentFixtureSource();
+  if (fixture) return getFixtureArtifactReview(fixture.state, artifactId);
   const supabase = await createClient();
   const artifactResult = await supabase.from("generated_artifacts").select("*").eq("id", artifactId).single();
   if (artifactResult.error) throw artifactResult.error;
@@ -29,6 +35,8 @@ export async function getArtifactReview(artifactId: string) {
 }
 
 export async function getLatestApprovedWeeklyPlan(unitId: string) {
+  const fixture = await getDevelopmentFixtureSource();
+  if (fixture) return getFixtureLatestApprovedWeeklyPlan(fixture.state, unitId);
   const supabase = await createClient();
   const result = await supabase.from("generated_artifacts").select("*")
     .eq("curriculum_unit_id", unitId).eq("kind", "weekly_plan").eq("status", "approved")

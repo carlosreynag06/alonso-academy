@@ -1,6 +1,8 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 import { getChildAccessState } from "@/lib/auth/child";
+import { ACTIVE_RECOVERY } from "@/lib/recovery/status";
+import { FixtureCommandError, recordFixtureActivityEvidence } from "@/lib/development-fixtures/commands";
 import { createClient } from "@/lib/supabase/server";
 
 const schema = z.object({
@@ -9,10 +11,20 @@ const schema = z.object({
 });
 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ attemptId: string }> }) {
-  if ((await getChildAccessState()).status !== "ready") return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  const access = await getChildAccessState();
+  if (access.status !== "ready") return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   const parsed = schema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: "invalid_evidence" }, { status: 400 });
   const { attemptId } = await params;
+  if (access.fixture) {
+    try {
+      await recordFixtureActivityEvidence(attemptId, parsed.data);
+      return NextResponse.json({ ok: true, fixture: true });
+    } catch (error) {
+      return NextResponse.json({ error: error instanceof FixtureCommandError ? error.code : "fixture_evidence_not_saved" }, { status: error instanceof FixtureCommandError ? error.status : 500 });
+    }
+  }
+  if (ACTIVE_RECOVERY.productMutationsLocked) return NextResponse.json({ error: "recovery_lock" }, { status: 423 });
   const supabase = await createClient();
   const result = await supabase.rpc("record_child_activity_evidence", {
     p_client_event_id: parsed.data.clientEventId, p_attempt_id: attemptId, p_block_id: parsed.data.blockId,

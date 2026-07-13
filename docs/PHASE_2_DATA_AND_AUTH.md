@@ -1,5 +1,7 @@
 # Phase 2: Data and Parent Authentication
 
+> **Historical scaffold — superseded by Recovery 0:** This document records the Phase 2 design and implementation intent. It does not certify the hosted data state, authorization behavior, or a completed product outcome. Recovery 0 places hosted curriculum, approvals, artifacts, evidence, mastery/review data, and provider settings under a mutation lock. Any recovery fixtures must be local-only, visibly labeled, contain no real child evidence, and remain unreachable from child-facing production queries.
+
 ## Hosted project
 
 - Project: `Alonso Academy`

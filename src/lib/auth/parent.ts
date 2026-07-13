@@ -3,14 +3,21 @@ import "server-only";
 import { getParentAllowlistEmail } from "@/lib/env/server";
 import { getSupabasePublicConfig } from "@/lib/supabase/config";
 import { createClient } from "@/lib/supabase/server";
+import { getDevelopmentFixtureSource } from "@/lib/development-fixtures/source";
 
 export type ParentAccessState =
   | { status: "configuration_required" }
   | { status: "signed_out" }
   | { status: "forbidden" }
-  | { status: "ready"; email: string; displayName: string };
+  | { status: "ready"; email: string; displayName: string; fixture?: true };
 
 export async function getParentAccessState(): Promise<ParentAccessState> {
+  const fixture = await getDevelopmentFixtureSource();
+  if (fixture) {
+    return fixture.role === "parent"
+      ? { status: "ready", email: "parent@fixture.invalid", displayName: "Fixture Parent", fixture: true }
+      : { status: "forbidden" };
+  }
   const allowedEmail = getParentAllowlistEmail();
   if (!getSupabasePublicConfig() || !allowedEmail) {
     return { status: "configuration_required" };

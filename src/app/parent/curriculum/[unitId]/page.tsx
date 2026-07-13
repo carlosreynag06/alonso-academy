@@ -5,7 +5,7 @@ import { BookIcon, CheckIcon, SoundIcon, SparkIcon } from "@/components/icons";
 import { ParentShell } from "@/components/shells/parent-shell";
 import { getParentAccessState } from "@/lib/auth/parent";
 import { getCurriculumUnit } from "@/lib/curriculum/repository";
-import { approveCurriculumUnit } from "../actions";
+import { ACTIVE_RECOVERY, recoveryLockMessage } from "@/lib/recovery/status";
 import styles from "../curriculum.module.css";
 
 export const metadata: Metadata = { title: "Curriculum Unit Review | Alonso Academy" };
@@ -29,6 +29,6 @@ export default async function CurriculumUnitPage({ params, searchParams }: { par
       <section className={`${styles.targetGroup} ${styles.targetBlue}`}><header><span><CheckIcon size={18} /></span><div><p>04</p><h2>Writing demand</h2></div><b>{data.writing.length}</b></header><ul>{data.writing.map((item) => <li key={item.id}><strong>{item.title}</strong><span>{item.demand}</span></li>)}</ul></section>
     </div>
 
-    <section className={styles.approval}><div><p className={styles.kicker}>Parent decision</p><h2>{data.unit.status === "draft" ? "Make this Alonso’s active boundary?" : "This boundary is approved."}</h2><p>{data.unit.status === "draft" ? "Your reason becomes part of the permanent decision record. Approval unlocks weekly planning, not automatic publication." : "Generation may use these targets. Every plan and lesson still needs its own review."}</p></div>{data.unit.status === "draft" ? <form action={approveCurriculumUnit}><input type="hidden" name="unitId" value={data.unit.id} /><label htmlFor="reason">Decision note</label><textarea id="reason" name="reason" minLength={10} required placeholder="Why is this scope appropriate for Alonso?" /><button type="submit">Approve Unit 1 <span>→</span></button></form> : <div className={styles.approvedSeal}><CheckIcon size={24} /><strong>Approved</strong></div>}<div className={styles.approvalRings} aria-hidden="true"><i /><i /></div></section>
+    <section className={styles.approval}><div><p className={styles.kicker}>Recovery 0 safeguard</p><h2>Curriculum decisions are paused.</h2><p>{recoveryLockMessage()} The status above is an existing hosted record, not a current invitation to approve.</p></div><div className={styles.approvedSeal}><CheckIcon size={24} /><strong>{ACTIVE_RECOVERY.phase}</strong></div><div className={styles.approvalRings} aria-hidden="true"><i /><i /></div></section>
   </main></ParentShell>;
 }

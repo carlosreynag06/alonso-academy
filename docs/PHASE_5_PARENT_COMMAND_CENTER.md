@@ -1,5 +1,7 @@
 # Phase 5: Parent Command Center and Approval Workflow
 
+> **Historical scaffold — superseded by Recovery 0:** This document preserves the intended parent workflow and implemented route history. It does not establish that the parent can inspect every instructional detail, publish five valid unique lessons, or complete the workflow without dead ends. Recovery 0 prohibits hosted approval/artifact mutations unless explicitly released; UX fixtures must be local-only, visibly labeled, and never child-visible.
+
 ## Outcome
 
 Phase 5 turns the generation core into a parent-controlled application workflow. The allowlisted parent can sign in with the provisioned password account, approve the Phase A pilot boundary, request a weekly plan, inspect its structured content and validation report, approve or reject the exact version, regenerate a new version, and then request individual daily, review, or listening-story lessons.

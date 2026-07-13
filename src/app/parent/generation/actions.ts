@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { getParentAccessState } from "@/lib/auth/parent";
 import type { ArtifactKind } from "@/lib/generation/contracts";
 import { generateValidatedArtifact } from "@/lib/generation/pipeline";
+import { ACTIVE_RECOVERY } from "@/lib/recovery/status";
 import { createClient } from "@/lib/supabase/server";
 
 const allowedKinds = new Set<ArtifactKind>(["weekly_plan", "daily_lesson", "review_lesson", "story_lesson"]);
@@ -12,6 +13,7 @@ const allowedKinds = new Set<ArtifactKind>(["weekly_plan", "daily_lesson", "revi
 export async function requestGeneration(formData: FormData) {
   const access = await getParentAccessState();
   if (access.status !== "ready") redirect("/login");
+  if (ACTIVE_RECOVERY.productMutationsLocked) redirect("/parent/generation?error=recovery_lock&message=Generation%20is%20paused%20during%20Recovery%200.");
 
   const kind = formData.get("kind")?.toString() as ArtifactKind | undefined;
   const unitId = formData.get("unitId")?.toString();
@@ -43,6 +45,7 @@ export async function requestGeneration(formData: FormData) {
 export async function approveArtifact(formData: FormData) {
   const access = await getParentAccessState();
   if (access.status !== "ready") redirect("/login");
+  if (ACTIVE_RECOVERY.productMutationsLocked) redirect("/parent/generation?error=recovery_lock&message=Approval%20decisions%20are%20paused%20during%20Recovery%200.");
   const artifactId = formData.get("artifactId")?.toString();
   const note = formData.get("note")?.toString().trim();
   if (!artifactId || !note || note.length < 5) redirect(`/parent/artifacts/${artifactId ?? ""}?error=note`);
@@ -59,6 +62,7 @@ export async function approveArtifact(formData: FormData) {
 export async function rejectArtifact(formData: FormData) {
   const access = await getParentAccessState();
   if (access.status !== "ready") redirect("/login");
+  if (ACTIVE_RECOVERY.productMutationsLocked) redirect("/parent/generation?error=recovery_lock&message=Rejection%20decisions%20are%20paused%20during%20Recovery%200.");
   const artifactId = formData.get("artifactId")?.toString();
   const note = formData.get("note")?.toString().trim();
   if (!artifactId || !note || note.length < 5) redirect(`/parent/artifacts/${artifactId ?? ""}?error=note`);

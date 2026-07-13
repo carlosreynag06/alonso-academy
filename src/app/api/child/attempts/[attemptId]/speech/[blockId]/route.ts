@@ -4,6 +4,8 @@ import { getChildAccessState } from "@/lib/auth/child";
 import { AudioProviderError, transcribeSpeech } from "@/lib/audio/provider";
 import { scoreTranscript } from "@/lib/audio/scoring";
 import { getChildLessonAttempt } from "@/lib/lesson/repository";
+import { ACTIVE_RECOVERY } from "@/lib/recovery/status";
+import { FixtureCommandError, recordFixtureSpeechOutcome } from "@/lib/development-fixtures/commands";
 import { createClient } from "@/lib/supabase/server";
 
 const fieldsSchema = z.object({
@@ -13,12 +15,28 @@ const fieldsSchema = z.object({
 });
 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ attemptId: string; blockId: string }> }) {
-  if ((await getChildAccessState()).status !== "ready") return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  const access = await getChildAccessState();
+  if (access.status !== "ready") return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   const { attemptId, blockId } = await params;
   const form = await request.formData().catch(() => null);
   const audio = form?.get("audio");
   const fields = fieldsSchema.safeParse(form ? Object.fromEntries(["clientEventId", "firstAttempt", "supportLevel", "responseLatencyMs", "retryCount"].map((key) => [key, form.get(key)])) : null);
   if (!(audio instanceof File) || audio.size < 100 || audio.size > 4_000_000 || !fields.success) return NextResponse.json({ error: "invalid_recording" }, { status: 400 });
+
+  if (access.fixture) {
+    try {
+      const outcome = await recordFixtureSpeechOutcome(attemptId, blockId, {
+        ...fields.data,
+        firstAttempt: fields.data.firstAttempt === "true",
+      });
+      return outcome.ok
+        ? NextResponse.json(outcome)
+        : NextResponse.json({ error: outcome.error, message: outcome.message, fixture: true }, { status: outcome.status });
+    } catch (error) {
+      return NextResponse.json({ error: error instanceof FixtureCommandError ? error.code : "fixture_speech_unavailable" }, { status: error instanceof FixtureCommandError ? error.status : 500 });
+    }
+  }
+  if (ACTIVE_RECOVERY.productMutationsLocked) return NextResponse.json({ error: "recovery_lock" }, { status: 423 });
 
   const data = await getChildLessonAttempt(attemptId).catch(() => null);
   const block = data?.lesson.content.blocks.find((candidate) => candidate.id === blockId);

@@ -4,11 +4,13 @@ import OpenAI, { APIError } from "openai";
 import { zodTextFormat } from "openai/helpers/zod";
 import { z } from "zod";
 import { requireServerEnvironment } from "@/lib/env/server";
+import { isDevelopmentFixtureRequest } from "@/lib/development-fixtures/source";
 import type { ProviderResult, ValidationReport } from "./contracts";
 import { validationIssueSchema } from "./contracts";
 import { INSTRUCTIONAL_MODEL, INSTRUCTIONAL_REASONING_EFFORT, SUMMARY_MODEL, VALIDATOR_VERSION, assertApprovedModel } from "./models";
 
-function getClient() {
+async function getClient() {
+  if (await isDevelopmentFixtureRequest()) throw new Error("OpenAI access is forbidden while a development fixture session is active.");
   const { OPENAI_API_KEY } = requireServerEnvironment(["OPENAI_API_KEY"]);
   return new OpenAI({ apiKey: OPENAI_API_KEY });
 }
@@ -37,7 +39,8 @@ export async function requestStructuredArtifact<T>(input: {
   assertApprovedModel(model, model === SUMMARY_MODEL ? "summary" : "instructional");
 
   try {
-    const response = await getClient().responses.parse({
+    const client = await getClient();
+    const response = await client.responses.parse({
       model,
       store: false,
       input: [

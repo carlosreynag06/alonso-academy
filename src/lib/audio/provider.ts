@@ -1,6 +1,7 @@
 import "server-only";
 
 import { getElevenLabsConfiguration } from "@/lib/env/server";
+import { isDevelopmentFixtureRequest } from "@/lib/development-fixtures/source";
 
 const API_ROOT = "https://api.elevenlabs.io/v1";
 
@@ -18,6 +19,7 @@ function classify(response: Response) {
 }
 
 export async function createSpeech(text: string) {
+  if (await isDevelopmentFixtureRequest()) throw new AudioProviderError("unavailable", "Fixture audio never calls ElevenLabs.");
   const config = getElevenLabsConfiguration();
   if (!config.apiKey || !config.voiceId) throw new AudioProviderError("not_configured", "A parent still needs to choose the lesson voice.");
 
@@ -40,6 +42,7 @@ type TranscriptResponse = {
 };
 
 export async function transcribeSpeech(bytes: Uint8Array, mimeType: string) {
+  if (await isDevelopmentFixtureRequest()) throw new AudioProviderError("unavailable", "Fixture speech never calls ElevenLabs.");
   const config = getElevenLabsConfiguration();
   if (!config.apiKey) throw new AudioProviderError("not_configured", "Speaking practice is not ready yet.");
 

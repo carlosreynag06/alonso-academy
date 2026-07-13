@@ -1,5 +1,7 @@
 # Phase 3: Visual System and Responsive Shells
 
+> **Historical scaffold — superseded by Recovery 0:** This document records the intended visual system, not an accepted UI/UX outcome. The existing shells and components have not been verified as premium, age-appropriate, accessible, or responsive product experiences. Recovery work may use visibly labeled local-only fixtures; hosted learning data and provider state remain mutation-locked.
+
 ## Direction
 
 Alonso Academy is a product application, not a marketing website. The shared experience is warm, calm, premium, and deliberate. “Calm” means emotionally safe and focused; it does not mean plain, basic, muted, or unfinished. It uses deep ink, restrained teal, warm paper, and intentional honey/coral accents while avoiding game economies and manipulative reward loops.

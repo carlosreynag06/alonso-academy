@@ -3,14 +3,21 @@ import "server-only";
 import { getChildLoginEmail } from "@/lib/env/server";
 import { getSupabasePublicConfig } from "@/lib/supabase/config";
 import { createClient } from "@/lib/supabase/server";
+import { getDevelopmentFixtureSource } from "@/lib/development-fixtures/source";
 
 export type ChildAccessState =
   | { status: "configuration_required" }
   | { status: "signed_out" }
   | { status: "forbidden" }
-  | { status: "ready"; email: string; displayName: "Alonso" };
+  | { status: "ready"; email: string; displayName: "Alonso"; fixture?: true };
 
 export async function getChildAccessState(): Promise<ChildAccessState> {
+  const fixture = await getDevelopmentFixtureSource();
+  if (fixture) {
+    return fixture.role === "child"
+      ? { status: "ready", email: "alonso@fixture.invalid", displayName: "Alonso", fixture: true }
+      : { status: "forbidden" };
+  }
   const childEmail = getChildLoginEmail();
   if (!getSupabasePublicConfig() || !childEmail) return { status: "configuration_required" };
 
@@ -25,6 +32,8 @@ export async function getChildAccessState(): Promise<ChildAccessState> {
 }
 
 export async function getSignedInDestination(): Promise<"/parent" | "/alonso" | null> {
+  const fixture = await getDevelopmentFixtureSource();
+  if (fixture) return fixture.role === "parent" ? "/parent" : "/alonso";
   if (!getSupabasePublicConfig()) return null;
   const supabase = await createClient();
   const { data } = await supabase.auth.getClaims();

@@ -3,6 +3,8 @@ import "server-only";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { parseSupportedChildLesson } from "./registry";
+import { getDevelopmentFixtureSource } from "@/lib/development-fixtures/source";
+import { getFixtureChildLessonAttempt, getFixtureChildLessonHome } from "@/lib/development-fixtures/adapters";
 
 const homePayloadSchema = z.object({
   child: z.object({ id: z.string(), preferredName: z.string() }),
@@ -16,6 +18,8 @@ const attemptPayloadSchema = z.object({
 });
 
 export async function getChildLessonHome() {
+  const fixture = await getDevelopmentFixtureSource();
+  if (fixture) return getFixtureChildLessonHome(fixture.state);
   const supabase = await createClient();
   const result = await supabase.rpc("get_child_lesson_home");
   if (result.error) throw result.error;
@@ -31,6 +35,8 @@ export async function getChildLessonHome() {
 }
 
 export async function getChildLessonAttempt(attemptId: string) {
+  const fixture = await getDevelopmentFixtureSource();
+  if (fixture) return getFixtureChildLessonAttempt(fixture.state, attemptId);
   const supabase = await createClient();
   const result = await supabase.rpc("get_child_lesson_attempt", { p_attempt_id: attemptId });
   if (result.error) throw result.error;
