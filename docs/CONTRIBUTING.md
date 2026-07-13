@@ -1,21 +1,29 @@
 # Working Agreement
 
-## Recovery 0 rules
+## Capability and safety rules
 
-Recovery 0 replaces phase-completion assumptions with evidence-based status. A route, migration, provider adapter, successful build, or polished document is scaffolding until its product outcome is explicitly verified.
+1. Use the capability language defined in `RECOVERY_0_BASELINE.md`: `scaffolded`, `blocked`, `implemented`, `verified`, and `pilot-ready` are evidence states, not synonyms.
+2. Do not describe a route, migration, provider adapter, successful build, fixture, or polished concept as proof that Alonso can use the product.
+3. Keep hosted product mutations and child delivery locked during Recovery 2. The committed Recovery 1 migration is not claimed as applied to hosted Supabase.
+4. Use local-only fixtures and read-only concept routes for product exploration. Fixtures remain outside hosted Supabase, contain no real child evidence, and never satisfy final acceptance.
+5. Never commit secrets, raw child audio, local environment files, or ignored fixture state.
+6. Do not run tests, take formal browser screenshots, perform child-usability observation, activate providers, or deploy without the explicit permission required by `PHASE_PLAN.md`.
 
-1. Keep the **mutation lock** in place unless the user explicitly authorizes a narrowly scoped recovery mutation. Do not change hosted curriculum, approvals, generated artifacts, child evidence, mastery/review records, provider administration, or voice/retention settings.
-2. Use local-only fixtures for product and UX exploration. Mark them visibly as fixtures, keep them outside hosted Supabase, include no real child evidence, and ensure child-facing production queries cannot return them.
-3. Do not describe a phase or workflow as complete merely because it compiles. Report separately what is scaffolded, reachable, verified, blocked, and pilot-ready.
-4. Preserve historical phase documents, but treat their Recovery 0 notices as authoritative over older outcome claims.
-5. Do not run tests or take screenshots without explicit permission.
+## Recovery 2 agreement
+
+1. Recovery 2 defines instructional design, character/world direction, visual/audio interaction concepts, adult-interface direction, and an asset-registry contract.
+2. Recovery 2 does not rebuild production parent or child screens, implement lesson schema v2, activate ElevenLabs, change mastery, or mutate hosted curriculum/publication state.
+3. Keep the Recovery 2 review gallery isolated from the rejected production CSS and lesson renderer.
+4. Generated image assets remain `in_review` until the parent approves their exact immutable versions.
+5. Viewing a concept does not approve it. Record approval only from an explicit parent statement identifying the direction or asset set.
+6. Recovery 3 remains closed until the parent approves the character cast, world/art direction, all seven child interaction concepts, adult-interface direction, and generated asset set.
 
 ## Standing implementation agreement
 
-1. Read `PHASE_PLAN.md` before changing the project.
+1. Read `PHASE_PLAN.md` and the current `docs/` set before changing the project.
 2. Work only within the phase explicitly authorized by the user.
-3. Reconcile the requested work with the Recovery 0 mutation lock before acting.
-4. Do not add commercial features, gamification, public sharing, analytics, or free-form child AI access.
-5. Never commit secrets, raw child audio, or local environment files.
-6. Keep generated artifacts immutable; regeneration creates a new version.
-7. Stop and request approval before starting the next phase.
+3. Inspect the worktree and preserve unrelated user changes.
+4. Use npm as the only package manager.
+5. Keep generated artifacts and asset versions immutable; regeneration creates a new version and approval never carries forward.
+6. Do not add commercial features, public sharing, analytics, manipulative gamification, free-form child AI, or automatic phase advancement.
+7. Update documentation to match reality, commit and push the phase, restart port 3000, report unverified work honestly, and stop before the next phase.

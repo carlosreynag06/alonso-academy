@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { CheckIcon, ClockIcon, LockIcon, ShieldIcon } from "@/components/icons";
 import { ParentShell } from "@/components/shells/parent-shell";
@@ -16,26 +17,28 @@ export default async function RecoveryPage() {
   const fixture = RECOVERY_FIXTURE_CATALOG;
   const approvedWeeks = baseline.artifactCounts["weekly_plan:approved"] ?? 0;
   const approvedLessons = (baseline.artifactCounts["daily_lesson:approved"] ?? 0) + (baseline.artifactCounts["review_lesson:approved"] ?? 0);
+  const deliveryStateAvailable = access.fixture || baseline.hostedPublication;
   const blockers = [
-    "The parent and child production interfaces still require the coherent Recovery 2 redesign.",
+    "The Recovery 2 character, world, interaction, and adult directions still require explicit parent approval.",
+    !access.fixture && !baseline.hostedPublication ? "The Recovery 1 authoritative hosted schema is not confirmed; hosted product mutations and child delivery remain locked." : null,
     "Lesson schema v1 cannot express character-led, picture-based, oral-first instruction.",
-    !baseline.providers.audioReady ? "ElevenLabs and an approved American-English voice are not configured." : null,
+    access.fixture ? "Fixture audio behavior is synthetic and does not verify provider health or a production voice." : "An ElevenLabs key and voice ID, if present, do not prove voice approval, retention approval, or provider health.",
     "Mastery, review scheduling, progress, and evidence-grounded summaries are not implemented.",
   ].filter((blocker): blocker is string => Boolean(blocker));
 
   return <ParentShell identity={access.email}><main className={styles.page} id="main-content">
-    <header className={styles.header}><div><p>Authoritative recovery baseline</p><h1>{ACTIVE_RECOVERY.phase}</h1><span>{ACTIVE_RECOVERY.title}</span></div><div className={styles.locked}><LockIcon size={18} /><strong>Authority boundaries enforced</strong><small>Approval remains private; publication and evidence now use explicit server-authoritative transitions.</small></div></header>
+    <header className={styles.header}><div><p>Authoritative recovery baseline</p><h1>{ACTIVE_RECOVERY.phase}</h1><span>{ACTIVE_RECOVERY.title}</span></div><div className={styles.locked}><LockIcon size={18} /><strong>Product changes paused</strong><small>Hosted mutations and child delivery remain locked while the Recovery 2 direction awaits your decision.</small></div></header>
 
-    <section className={styles.next}><div><ShieldIcon size={22} /></div><div><p>Exact next blocker</p><h2>{ACTIVE_RECOVERY.nextBlocker}</h2><span>Recovery 1 now provides the authoritative five-slot week, explicit publication boundary, resumable attempts, and server-derived evidence required before interface rebuilding.</span></div></section>
+    <section className={styles.next}><div><ShieldIcon size={22} /></div><div><p>Exact next blocker</p><h2>{ACTIVE_RECOVERY.nextBlocker}</h2><span>The concept room contains the original cast, world, oral-learning arc, seven child interactions, adult workspace direction, and exact in-review concept register.</span><Link className={styles.reviewLink} href="/parent/recovery-2">Open Recovery 2 concept room →</Link></div></section>
 
     <section className={styles.section} aria-labelledby="real-state-title"><header><div><p>{access.fixture ? "Development fixture" : "Hosted project"}</p><h2 id="real-state-title">{access.fixture ? "Synthetic local state" : "Real data and provider state"}</h2></div><span className={styles.realBadge}>{access.fixture ? "No hosted reads or writes" : "No fixture values"}</span></header><div className={styles.metrics}>
       <article><small>Curriculum</small><strong>{baseline.curriculum?.status ?? "missing"}</strong><span>{baseline.curriculum?.code ?? "A-U1 unavailable"}</span></article>
       <article><small>Approved weeks</small><strong>{approvedWeeks}</strong><span>Artifact approval only</span></article>
       <article><small>Approved lessons</small><strong>{approvedLessons}</strong><span>Not a publication count</span></article>
-      <article><small>Day slots / published</small><strong>{baseline.slotCount} / {baseline.assignmentCounts.published ?? 0}</strong><span>Authoritative delivery state</span></article>
+      <article><small>Day slots / published</small><strong>{deliveryStateAvailable ? `${baseline.slotCount} / ${baseline.assignmentCounts.published ?? 0}` : "— / —"}</strong><span>{access.fixture ? "Synthetic fixture state" : baseline.hostedPublication ? "Authoritative hosted state" : "Hosted schema not confirmed"}</span></article>
       <article><small>Attempts / evidence</small><strong>{baseline.attempts.length} / {baseline.evidenceCount}</strong><span>Learning history</span></article>
       <article><small>Mastery / reviews</small><strong>{baseline.masteryCount} / {baseline.reviewCount}</strong><span>Adaptive loop</span></article>
-      <article><small>Audio ready</small><strong>{baseline.providers.audioReady ? "Yes" : "No"}</strong><span>{baseline.providers.approvedVoice ? "Voice selected" : "Voice approval missing"}</span></article>
+      <article><small>{access.fixture ? "Fixture audio" : "Audio configuration"}</small><strong>{access.fixture ? (baseline.providers.audioReady ? "Success scenario" : "Failure scenario") : (baseline.providers.audioReady ? "Key + voice ID present" : "Incomplete")}</strong><span>{access.fixture ? "Synthetic; not provider health" : "Approval and health unverified"}</span></article>
     </div></section>
 
     <section className={styles.section} aria-labelledby="blockers-title"><header><div><p>Product truth</p><h2 id="blockers-title">Current blockers</h2></div><span>{blockers.length} open</span></header><ul className={styles.blockers}>{blockers.map((blocker) => <li key={blocker}><ClockIcon size={17} /><span>{blocker}</span></li>)}</ul></section>

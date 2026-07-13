@@ -14,10 +14,11 @@ export const metadata: Metadata = { title: "My Lessons | Alonso Academy" };
 export default async function AlonsoHome({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
   const access = await getChildAccessState();
   if (access.status !== "ready") redirect("/login");
-  const [home, query] = await Promise.all([getChildLessonHome(), searchParams]);
-  const nextLesson = ACTIVE_RECOVERY.childDeliveryLocked && !access.fixture
-    ? null
-    : home.todayAssignment ?? home.retrievalAssignments[0] ?? home.replayAssignments[0] ?? null;
+  const query = await searchParams;
+  const home = ACTIVE_RECOVERY.childDeliveryLocked && !access.fixture
+    ? { todayAssignment: null, retrievalAssignments: [], replayAssignments: [] }
+    : await getChildLessonHome();
+  const nextLesson = home.todayAssignment ?? home.retrievalAssignments[0] ?? home.replayAssignments[0] ?? null;
   const isResume = Boolean(nextLesson?.activeAttemptId);
   const isReplay = nextLesson?.mode === "replay";
   const isRetrieval = nextLesson?.mode === "scheduled_retrieval";

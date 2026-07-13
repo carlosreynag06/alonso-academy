@@ -8,6 +8,8 @@ Recovery 0 permits truth reset, isolated fixtures, inventories, and acceptance d
 
 **Recovery 1 handoff (2026-07-12):** this file remains the historical pre-Recovery-1 baseline and capability-language authority. The repository now contains the implemented Recovery 1 domain/publication/attempt contract documented in `docs/RECOVERY_1_DOMAIN.md`; its migration is not claimed as applied to hosted Supabase and its behavior is not verified. Where this baseline says publication or evidence authority is `blocked`, read that as the condition Recovery 1 was implemented to supersede, not as a new verification result.
 
+**Recovery 2 handoff (2026-07-13):** the repository also contains the implemented-but-unapproved Recovery 2 design candidate documented by the `RECOVERY_2_*` files and `/parent/recovery-2`. It defines direction only; hosted product mutations and child delivery are locked, and no concept, image, production screen, provider, or usability outcome is verified.
+
 ## Capability language
 
 These labels describe product capability, not effort or file count.

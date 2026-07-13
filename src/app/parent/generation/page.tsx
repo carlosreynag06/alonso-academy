@@ -39,7 +39,7 @@ export default async function GenerationPage({ searchParams }: { searchParams: P
           <article><span><ClockIcon size={19} /></span><div><small>Review queue</small><strong>{reviewQueue.length} version{reviewQueue.length === 1 ? "" : "s"}</strong></div></article>
         </section>
 
-        <section className={styles.commandGate}><div className={styles.gateGlow}><LockIcon size={28} /></div><p className={styles.cardLabel}>Generation safeguard</p><h2>No new AI content is generated.</h2><p>{recoveryLockMessage()} Existing approved lessons can still move through the explicit publication controls below.</p><ActionLink href="/parent/recovery">See the exact recovery state</ActionLink></section>
+        <section className={styles.commandGate}><div className={styles.gateGlow}><LockIcon size={28} /></div><p className={styles.cardLabel}>Recovery safeguard</p><h2>Generation and publication are paused.</h2><p>{recoveryLockMessage()} Existing versions and their authoritative publication history remain available for read-only inspection below.</p><ActionLink href="/parent/recovery">See the exact recovery state</ActionLink></section>
 
         <section className={styles.queueSection} aria-labelledby="publication-title">
           <div className={styles.sectionHeader}><div><p className={styles.eyebrow}>Authoritative child visibility</p><h2 id="publication-title">Five-day publication state</h2></div><span className={styles.queueCount}>{publication.available && publication.currentWeek ? publication.currentWeek.status : "not ready"}</span></div>

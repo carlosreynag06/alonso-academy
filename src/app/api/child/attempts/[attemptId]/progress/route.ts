@@ -3,6 +3,7 @@ import { z } from "zod";
 import { getChildAccessState } from "@/lib/auth/child";
 import { applyFixtureProgressCommand, FixtureCommandError } from "@/lib/development-fixtures/commands";
 import { attemptMutationResponseSchema, attemptProgressCommandSchema } from "@/lib/lesson/runtime-contracts";
+import { ACTIVE_RECOVERY } from "@/lib/recovery/status";
 import { createClient } from "@/lib/supabase/server";
 
 const schema = z.object({
@@ -15,6 +16,7 @@ const schema = z.object({
 export async function POST(request: NextRequest, { params }: { params: Promise<{ attemptId: string }> }) {
   const access = await getChildAccessState();
   if (access.status !== "ready") return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  if (!access.fixture && ACTIVE_RECOVERY.childDeliveryLocked) return NextResponse.json({ error: "recovery_lock" }, { status: 423 });
   const parsed = schema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: "invalid_progress" }, { status: 400 });
   const { attemptId } = await params;

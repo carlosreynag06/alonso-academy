@@ -20,6 +20,12 @@ As of 2026-07-12, the repository contains an `implemented` Recovery 1 foundation
 
 This is not acceptance evidence. Hosted migration application has not been established; no formal authorization/RLS, lifecycle, reload, stale-command, evidence, responsive, screenshot, provider, or child-usability proof is recorded. No checklist row passes merely because Recovery 1 is implemented, and live speech, mastery/review, character assets, final UI, and the complete pilot remain unverified or unimplemented as assigned below.
 
+## Recovery 2 design handoff
+
+As of 2026-07-13, the repository contains an implemented Recovery 2 candidate set: the Phase A instructional blueprint, original Luma Landing cast and world, child art bible, seven visual/audio interaction storyboards, separate adult-interface direction, design-level asset contract, four immutable generated concept files, and an authenticated read-only review gallery. Every direction and asset remains `in_review` pending explicit parent approval.
+
+This is not checklist-row-6 proof. The concept set is not wired into lesson schema v2, a production asset registry, the child player, approved audio, or a verified fallback. Viewing or committing it does not constitute approval, usability evidence, media readiness, or pilot acceptance.
+
 ## Final ten-step acceptance checklist
 
 | # | Required outcome | Objective proof required | Failure conditions | Evidence owner |

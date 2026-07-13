@@ -142,6 +142,8 @@ Final parent/child visual redesign, new character assets, live ElevenLabs activa
 
 ## Recovery 2 - Instructional design, character world, and art direction
 
+**Implementation status (2026-07-13): `implemented`, awaiting explicit parent approval.** The repository now contains the Recovery 2 instructional blueprint, original Luma Landing cast/world and art bible, seven visual/audio interaction storyboards, separate adult-interface direction, immutable asset-contract proposal, four generated concept assets, and an authenticated read-only review gallery at `/parent/recovery-2`. This does not satisfy the phase completion gate: no direction or generated asset is approved until the parent explicitly records a decision, and Recovery 3 remains closed.
+
 **Objective:** Define the learning experience and visual identity before production UI is rebuilt.
 
 ### Scope
@@ -168,6 +170,15 @@ The product has a memorable, original learning guide and world for Alonso plus a
 ### Approval decisions
 
 Character, world, parent-interface direction, and any generated image assets require parent review before Recovery 3 proceeds.
+
+### Implementation record (2026-07-13)
+
+- Defined a 12–15 minute Phase A oral-learning choreography with one to two default new oral targets, English-first gesture/model support, bounded Spanish rescue, remediation, retrieval, and server-authoritative evidence semantics.
+- Created the original Luma Landing direction with Miko as guide and Pippa, Moss, and Nia in distinct instructional roles across Welcome Dock, Action Grove, Sound Workshop, Story Camp, and Word Gallery.
+- Created a tactile gouache/cut-paper child art bible and four immutable `in_review` concept images: cast anchor, world scene, Miko teaching poses, and interaction story art.
+- Specified visual and audio behavior, one-action comprehension, fallback, and evidence consequences for Alonso Home, listen-and-find, character conversation, speaking/recording, story/retell, completion, and learned-word collection.
+- Defined a separate flat, compact adult workspace direction with persistent labels, minimal radius, no gradients, operational tables/split views, and explicit lifecycle consequences.
+- Defined the design-level immutable asset contract and parent approval record. No database/storage registry, schema-v2 lesson contract, production UI rebuild, provider activation, mastery logic, tests, screenshots, or usability observation was performed.
 
 ## Recovery 3 - Lesson contract v2, asset registry, and deterministic validation
 

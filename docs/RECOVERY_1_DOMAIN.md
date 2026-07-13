@@ -196,4 +196,4 @@ Recovery 1 is recorded as `implemented` because the authorized repository scope 
 - that publication uniqueness, replacement, withdrawal, stale-command rejection, resume, evidence derivation, and completion have passed formal checks;
 - that any current lesson is instructionally suitable, visually acceptable, audio-ready, or usable by Alonso.
 
-The next authorized phase is Recovery 2: instructional design, character world, and adult art direction. Recovery 2 must not reinterpret Recovery 1 implementation as approval of the current UI or lesson experience.
+Recovery 2 now has an implemented candidate direction in the repository, pending explicit parent approval. Its review route and documents do not reinterpret Recovery 1 implementation as approval of the current UI, v1 lesson experience, hosted migration state, or child delivery. Hosted product mutations and child delivery remain locked while that decision is pending.

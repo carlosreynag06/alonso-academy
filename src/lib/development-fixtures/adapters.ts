@@ -110,7 +110,7 @@ function targetRows(state: DevelopmentFixtureState) {
       frame: target.text,
       communication_function: "greeting",
       mode: "oral_only",
-      acceptable_responses: ["Hello", "Hi"],
+      acceptable_responses: ["Hello"],
       recast_guidance: "Model once, accept an intelligible greeting, and avoid requiring accent-perfect production.",
       status: "approved",
       created_at: CREATED_AT,
@@ -384,7 +384,7 @@ export type FixtureRecoveryBaseline = {
   masteryCount: number;
   reviewCount: number;
   providerEvents: Array<{ provider: string; status: string }>;
-  providers: { supabase: boolean; openAi: boolean; elevenLabsKey: boolean; approvedVoice: boolean; audioReady: boolean };
+  providers: { supabase: boolean; openAi: boolean; elevenLabsKey: boolean; voiceIdPresent: boolean; audioReady: boolean };
   slotCount: number;
   assignmentCounts: Record<string, number>;
   hostedPublication: false;
@@ -416,7 +416,7 @@ export function getFixtureRecoveryBaseline(state: DevelopmentFixtureState): Fixt
       supabase: false,
       openAi: state.providers.openai === "success",
       elevenLabsKey: simulatedAudioReady,
-      approvedVoice: simulatedAudioReady,
+      voiceIdPresent: simulatedAudioReady,
       audioReady: simulatedAudioReady,
     },
     slotCount: state.catalog.slots.length,

@@ -85,7 +85,7 @@ export default async function ArtifactReviewPage({ params, searchParams }: { par
 
     <section className={styles.decisionSection} aria-labelledby="publication-controls-title">
       <div><p className={styles.eyebrow}>Publication boundary</p><h2 id="publication-controls-title">Approval never makes a lesson visible.</h2><p>Scheduling, publishing, replacing, withdrawing, revoking approval, and archiving are separate recorded parent decisions. Each action below is shown only when the current authoritative state allows it.</p></div>
-      {!publication.available ? <div className={styles.approvedPlate}><LockIcon size={24} /><strong>Publication unavailable</strong><span>{publication.reason}</span></div> : <div className={styles.decisionForms}>
+      {!publication.available ? <div className={styles.approvedPlate}><LockIcon size={24} /><strong>Publication unavailable</strong><span>{publication.reason}</span></div> : ACTIVE_RECOVERY.productMutationsLocked ? <div className={styles.approvedPlate}><LockIcon size={24} /><strong>Publication controls paused</strong><span>Authoritative state remains visible, but no publication transition is available during {ACTIVE_RECOVERY.phase}.</span></div> : <div className={styles.decisionForms}>
         {data.artifact.kind === "weekly_plan" && publication.learningWeek && <div className={styles.decisionForm}><p className={styles.cardLabel}>Five exact day slots</p><strong>{publication.learningWeek.status} week</strong>{[1, 2, 3, 4, 5].map((day) => {
           const slot = publication.slots.find((candidate) => candidate.day_number === day);
           const assignment = slot ? publication.assignments.find((candidate) => candidate.week_day_slot_id === slot.id && activeAssignmentStatuses.has(candidate.status)) : null;
